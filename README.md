@@ -1,4 +1,4 @@
-# 🧠 Project: DO_NOT_OPEN.exe
+# 🧠 Project: non_disclosure.exe
 
 > *This repo was a mistake. You are now part of it.*
 
