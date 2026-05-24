@@ -5,7 +5,7 @@
     "tech": ["React Native", "TypeScript", "Expo"],
     "link": "https://github.com/Stewy8506/RN-Habit-Tracker",
     "category": "Mobile App",
-    "color": "from-blue-500/20 to-cyan-500/20"
+    "image": "/projects/habit-tracker.jpg"
   },
   {
     "title": "Adaptive Noise Cancellation",
@@ -13,7 +13,7 @@
     "tech": ["C", "STM32", "DSP"],
     "link": "https://github.com/Stewy8506/STM32-Adaptive-Noise-Cancellation",
     "category": "Embedded Systems",
-    "color": "from-purple-500/20 to-indigo-500/20"
+    "image": "/projects/noise-cancel.jpg"
   },
   {
     "title": "AI Intelligence Suite",
@@ -21,7 +21,7 @@
     "tech": ["Next.js", "TypeScript", "OpenAI"],
     "link": "https://github.com/Stewy8506/AI-App",
     "category": "AI Product",
-    "color": "from-emerald-500/20 to-teal-500/20"
+    "image": "/projects/ai-suite.jpg"
   },
   {
     "title": "Smart Helmet OS",
@@ -29,6 +29,6 @@
     "tech": ["Embedded C", "Hardware", "IoT"],
     "link": "https://github.com/Stewy8506/Smart-Helmet-Full-Hardware-Code",
     "category": "Embedded Systems",
-    "color": "from-orange-500/20 to-red-500/20"
+    "image": "/projects/smart-helmet.jpg"
   }
 ]

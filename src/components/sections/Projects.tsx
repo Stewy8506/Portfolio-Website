@@ -90,11 +90,15 @@ export default function Projects() {
                   "relative block glass-effect p-8 rounded-3xl border border-white/10 group overflow-hidden transition-all hover:border-white/20 h-full",
                 )}
               >
-                {/* Subtle Background Glow */}
-                <div className={cn(
-                  "absolute -inset-px bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl",
-                  project.color
-                )} />
+                {/* Project Image */}
+                <div className="absolute inset-0 z-0 opacity-40 group-hover:opacity-60 transition-opacity duration-500">
+                  <img 
+                    src={project.image} 
+                    alt={project.title} 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+                </div>
 
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-4">
