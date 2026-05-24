@@ -23,17 +23,19 @@ export default function FadeIn({
   const variants: Variants = {
     hidden: {
       opacity: 0,
+      scale: 0.98,
       x: direction === "left" ? 20 : direction === "right" ? -20 : 0,
       y: direction === "up" ? 20 : direction === "down" ? -20 : 0,
     },
     visible: {
       opacity: 1,
+      scale: 1,
       x: 0,
       y: 0,
       transition: {
         duration,
         delay,
-        ease: [0.215, 0.61, 0.355, 1],
+        ease: [0.16, 1, 0.3, 1], // Custom quintic out ease for a more premium feel
       },
     },
   };

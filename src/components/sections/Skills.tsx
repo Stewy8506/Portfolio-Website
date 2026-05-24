@@ -2,6 +2,7 @@
 
 import FadeIn from "../ui/FadeIn";
 import Section from "../ui/Section";
+import { motion } from "framer-motion";
 
 const SKILLS = [
   {
@@ -38,7 +39,10 @@ export default function Skills() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {SKILLS.map((skill, idx) => (
           <FadeIn key={skill.category} delay={idx * 0.1}>
-            <div className="glass-effect p-6 rounded-2xl border border-white/10 h-full group hover:border-white/20 transition-colors">
+            <motion.div 
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="glass-effect p-6 rounded-2xl border border-white/10 h-full group hover:border-white/20 transition-colors"
+            >
               <h3 className="text-lg font-semibold mb-6 text-white group-hover:text-white transition-colors">
                 {skill.category}
               </h3>
@@ -50,7 +54,7 @@ export default function Skills() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
           </FadeIn>
         ))}
       </div>

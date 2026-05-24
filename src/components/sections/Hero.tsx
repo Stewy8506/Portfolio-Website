@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import FadeIn from "../ui/FadeIn";
 import Button from "../ui/Button";
 import { ArrowRight } from "lucide-react";
@@ -8,7 +9,18 @@ export default function Hero() {
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden bg-background">
       {/* Background Glow */}
-      <div className="absolute inset-0 bg-gradient-radial pointer-events-none" />
+      <motion.div 
+        animate={{ 
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3],
+        }}
+        transition={{ 
+          duration: 8, 
+          repeat: Infinity, 
+          ease: "easeInOut" 
+        }}
+        className="absolute inset-0 bg-gradient-radial pointer-events-none" 
+      />
       
       <div className="relative z-10 text-center px-6 max-w-4xl">
         <FadeIn delay={0.1}>
