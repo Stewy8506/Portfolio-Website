@@ -8,6 +8,14 @@ import { useSoundEffect } from "@/hooks/useSoundEffect";
 
 export default function Hero() {
   const { playThocc } = useSoundEffect();
+
+  const handleScroll = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
       {/* Background Glow */}
@@ -64,7 +72,13 @@ export default function Hero() {
 
         <FadeIn delay={0.4}>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
-            <Button variant="primary" className="group flex items-center justify-center gap-2 w-full sm:w-auto" data-cursor="button" onMouseEnter={playThocc}>
+            <Button 
+              variant="primary" 
+              className="group flex items-center justify-center gap-2 w-full sm:w-auto" 
+              data-cursor="button" 
+              onMouseEnter={playThocc}
+              onClick={() => handleScroll("projects")}
+            >
               View Projects
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
@@ -74,7 +88,13 @@ export default function Hero() {
                 <Download className="w-4 h-4 group-hover:-translate-y-1 transition-transform" />
               </Button>
             </a>
-            <Button variant="outline" data-cursor="button" className="w-full sm:w-auto justify-center" onMouseEnter={playThocc}>
+            <Button 
+              variant="outline" 
+              data-cursor="button" 
+              className="w-full sm:w-auto justify-center" 
+              onMouseEnter={playThocc}
+              onClick={() => handleScroll("contact")}
+            >
               Get in touch
             </Button>
           </div>
