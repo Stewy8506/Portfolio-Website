@@ -2,12 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Download, Volume2, ArrowRight } from "lucide-react";
+import { Search, Download, Volume2, ArrowRight, Settings } from "lucide-react";
 import { useSoundEffect } from "@/hooks/useSoundEffect";
+import { toast } from "@/components/ui/Toast";
 
 export default function CommandPalette() {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
   const { playThocc } = useSoundEffect();
 
   useEffect(() => {
@@ -22,6 +24,20 @@ export default function CommandPalette() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
+  // Check auth status for Admin Portal
+  useEffect(() => {
+    if (isOpen) {
+      fetch("/api/auth/check")
+        .then((res) => res.json())
+        .then((data) => {
+          setIsAdmin(!!data.authenticated);
+        })
+        .catch(() => {
+          setIsAdmin(false);
+        });
+    }
   }, [isOpen]);
 
   const actions = [
@@ -39,7 +55,21 @@ export default function CommandPalette() {
         const event = new CustomEvent('toggleSound');
         window.dispatchEvent(event);
         setIsOpen(false);
-    } }
+    } },
+    { 
+      id: "admin", 
+      label: "Admin Portal", 
+      icon: Settings, 
+      action: () => {
+        if (!isAdmin) {
+          toast("Admin Portal requires authentication. Please log in first.", "error");
+          return;
+        }
+        window.open("/admin", "_blank");
+        toast("Opening Admin console...", "info");
+        setIsOpen(false);
+      } 
+    }
   ];
 
   const filteredActions = actions.filter(a => a.label.toLowerCase().includes(search.toLowerCase()));
@@ -80,18 +110,43 @@ export default function CommandPalette() {
               {filteredActions.length === 0 ? (
                 <div className="p-4 text-center text-zinc-500 text-sm">No commands found.</div>
               ) : (
-                filteredActions.map((action) => (
-                  <button
-                    key={action.id}
-                    onClick={() => { playThocc(); action.action(); }}
-                    onMouseEnter={playThocc}
-                    className="w-full flex items-center px-3 py-3 rounded-xl hover:bg-white/5 text-left transition-colors group cursor-pointer"
-                    data-cursor="none"
-                  >
-                    <action.icon className="w-4 h-4 text-zinc-400 group-hover:text-emerald-400 mr-3 transition-colors" />
-                    <span className="text-zinc-300 group-hover:text-white text-sm font-medium">{action.label}</span>
-                  </button>
-                ))
+                filteredActions.map((action) => {
+                  const isDisabledAdmin = action.id === "admin" && !isAdmin;
+                  return (
+                    <button
+                      key={action.id}
+                      onClick={() => { 
+                        playThocc(); 
+                        action.action(); 
+                      }}
+                      onMouseEnter={playThocc}
+                      className={`w-full flex items-center px-3 py-3 rounded-xl text-left transition-colors group cursor-pointer ${
+                        isDisabledAdmin 
+                          ? "opacity-40 cursor-not-allowed hover:bg-transparent" 
+                          : "hover:bg-white/5"
+                      }`}
+                      data-cursor="none"
+                    >
+                      <action.icon className={`w-4 h-4 mr-3 transition-colors ${
+                        isDisabledAdmin 
+                          ? "text-zinc-600 group-hover:text-zinc-600" 
+                          : "text-zinc-400 group-hover:text-emerald-400"
+                      }`} />
+                      <span className={`text-sm font-medium ${
+                        isDisabledAdmin 
+                          ? "text-zinc-500 group-hover:text-zinc-500" 
+                          : "text-zinc-300 group-hover:text-white"
+                      }`}>
+                        {action.label}
+                      </span>
+                      {isDisabledAdmin && (
+                        <span className="ml-auto text-[10px] bg-zinc-800 text-zinc-500 border border-white/5 px-1.5 py-0.5 rounded font-mono">
+                          LOCKED
+                        </span>
+                      )}
+                    </button>
+                  );
+                })
               )}
             </div>
           </motion.div>
