@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import LoadingScreen from "../ui/LoadingScreen";
 import OnboardingTour from "../ui/OnboardingTour";
 import PresenceCursors from "../ui/PresenceCursors";
-import EmojiWheel from "../ui/EmojiWheel";
+import RadialMenu from "../radial-menu";
 
 export default function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -19,7 +19,7 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
         <>
           <OnboardingTour />
           <PresenceCursors />
-          <EmojiWheel />
+          <RadialMenu />
         </>
       )}
     </>
