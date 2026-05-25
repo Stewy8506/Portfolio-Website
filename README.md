@@ -11,6 +11,9 @@
 
 > **Warning: This repository is a sentient environment.** If you are reading this, you have already initialized the session. You are now part of the ecosystem.
 
+> [!IMPORTANT]
+> **Proprietary & Private Source Notice:** This repository is the personal portfolio of Anuvab Das. All rights reserved. The source code, assets, UI designs, and system concepts are strictly proprietary. Copying, distributing, cloning, modifying, or redeploying this application (either in part or in whole) for public, commercial, or personal use is strictly prohibited.
+
 ---
 
 ## 🚨 System Status
@@ -58,95 +61,64 @@
 
 ---
 
-## 📁 System Architecture Map
+## 📁 Repository Blueprint & Core Subsystems
 
-Here is how the core modules of `anv os` are laid out:
+`anv os` is structured as a zero-dependency-inspired workspace utilizing a highly componentized architecture. The source files are organized into atomic visual widgets, responsive layouts, data layers, and custom Hooks:
 
 ```
 portfolio-app/
 ├── src/
-│   ├── app/                      # Next.js App Router Page Layouts
-│   │   ├── admin/                # Admin Panel and Login Console
-│   │   ├── api/                  # Serverless APIs (auth, projects, contact, skills)
-│   │   ├── layout.tsx            # Global ClientWrapper & Noise Overlays
-│   │   └── page.tsx              # Home Shell holding Sections
+│   ├── app/                      # Next.js 16 App Router Layouts, APIs & Console
+│   │   ├── admin/                # Passcode-protected administrative gateway
+│   │   ├── api/                  # Serverless endpoint handlers (SMTP, DB, GitHub metrics)
+│   │   ├── projects/             # Multi-view projects visualization routes
+│   │   ├── layout.tsx            # Root shell implementing noise overlays & client-side providers
+│   │   ├── page.tsx              # Home shell housing viewport sections
+│   │   └── template.tsx          # Fader animations for page-state transitions
 │   ├── components/
-│   │   ├── layout/               # System Layout (MenuBar, Dock, Nav wrappers)
-│   │   ├── sections/             # Interactive sections (Hero, About, Bento Projects, Skills)
-│   │   └── ui/                   # High-Fidelity UI Blocks
-│   │       ├── ChatWindow.tsx    # Firebase Anonymous Resizable Chat Console
-│   │       ├── DynamicBackground.tsx # Three.js Particle Mesh Canvas
-│   │       ├── LoadingScreen.tsx # Boot Sequence Logger
-│   │       └── Toast.tsx         # macOS styled system notifications
-│   ├── data/                     # Local JSON registries (Skills and Project details)
-│   ├── hooks/                    # Reusable React hooks (useSoundEffect)
-│   └── lib/                      # Firebase setup and security wrappers
-└── .env.local                    # Secrets config register (gitignore)
+│   │   ├── layout/               # High-level layouts (System MenuBar, Magnetic Dock)
+│   │   ├── sections/             # Section-level content (Hero, About, Bento/Cinematic Projects, Skills)
+│   │   └── ui/                   # Immersive system visual widgets & custom controls
+│   ├── data/                     # Read-only static registries (JSON files for Skills & Projects)
+│   ├── hooks/                    # Hook controllers for auditory and keyboard states
+│   ├── lib/                      # Core wrappers (Firebase instances, cookie guards, security logic)
+│   └── middleware.ts             # Active HTTP filter checking admin session tokens
+└── package.json                  # Engine versioning, Tailwind v4 and React 19 configuration
 ```
 
 ---
 
-## ⚙️ Environment Configuration
+## 🧬 Deep Dive: System Subsystems
 
-To unlock full system capabilities, configure a `.env.local` file at the root of the project with the following variables:
+To understand how the codebase orchestrates this high-fidelity experience, here is a detailed breakdown of the internal sub-systems:
 
-```env
-# Administrative Password
-ADMIN_PASSWORD=your_secure_password
-NEXT_PUBLIC_ADMIN_PASSWORD=your_secure_password
+### 1. The Rendering Layer (`src/components/ui/DynamicBackground.tsx`)
+*   **Three.js Physics Engine:** Powered by React Three Fiber, this component hosts `7,000` interactive particles mapped onto dynamic buffer geometries.
+*   **Vector Repulsion & Spring Dynamics:** The particle positions are calculated on every frame within a custom shader/render loop. When the custom cursor approaches, active force vectors push coordinates away, before smoothly interpolating back to their initial state via dampening spring physics.
+*   **Noise Overlay (`src/components/ui/NoiseOverlay.tsx`):** A custom SVG film-grain filter with micro-opacity loops layered on top of the canvas, giving the portfolio its signature raw retro-terminal aesthetic.
 
-# Image Assets Manager
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloudinary_name
-NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_cloudinary_preset
+### 2. The Acoustic Feedback Pipeline (`src/hooks/useSoundEffect.ts`)
+*   **Context-Aware Synths:** Keyboard inputs, menu item selections, spotlight selections, and terminal thoccs use the Web Audio API to play localized sound bytes.
+*   **Hidden Lofi Streamer (`src/components/layout/MenuBar.tsx`):** A top-menu panel module which dynamically mounts an asynchronous YouTube iframe container. It captures media controls, overlays a custom slider matching client mouse coords for absolute volume levels, and plays a lo-fi playlist seamlessly in the background.
 
-# Firebase Credentials (Powers the Global Chat Lobby)
-NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.firebasestorage.app
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+### 3. Real-Time Telemetry & Lobby Chat (`src/components/ui/ChatWindow.tsx`)
+*   **Serverless Data Streams:** Integrates Firestore real-time document listeners to enable anonymous global chat.
+*   **Dynamic Nicknames:** Since the chat is anonymous, a client-side hashing mechanism couples dynamic adjectives and animal names to unique user UIDs on-the-fly.
+*   **Dynamic Panel Resize:** Combines pointer events and absolute layout constraints to allow dragging, maximizing, minimizing, and absolute positioning of the window pane on the client viewport.
 
-# Mail Relays (Powers the Contact Terminal)
-EMAIL_USER=your_smtp_email@gmail.com
-EMAIL_PASS=your_smtp_app_password
-```
+### 4. Search and Action Portal (`src/components/ui/CommandPalette.tsx`)
+*   **Spotlight Command Palette:** Instantiated globally through `Ctrl + K` or `Cmd + K` event listeners. 
+*   **Instant Query Matching:** Uses client-side token search arrays indexing projects, system files, pages, and terminal commands. Supports fluid arrow key navigation and Enter key action execution, bypassing normal cursor reliance.
 
----
-
-## 🚀 Booting Up Locally
-
-Follow these instructions to run `anv os` on your local hardware:
-
-### 1. Clone & Install Dependencies
-```bash
-git clone https://github.com/Stewy8506/portfolio-app.git
-cd portfolio-app
-npm install
-```
-
-### 2. Launch Local Environment
-```bash
-npm run dev
-```
-
-### 3. Build & Compile Production Target
-```bash
-npm run build
-npm run start
-```
-
-If it successfully spins up on `localhost:3000`:
-> **Verdict:** Extremely suspicious. You have broken code probability laws.
-
-If the shell throws a stack trace:
-> **Verdict:** Intended behavior. Welcome to the workspace.
+### 5. Access Gates & Control Panel (`src/app/admin/` & `src/middleware.ts`)
+*   **Passcode Protection:** The administrative endpoint uses client-side cryptographic cookie generation.
+*   **Middleware Filtration:** A custom Next.js middleware interrogates every administrative request for these specific cryptographically-verified session cookies, redirecting unauthorized traffic immediately back to the home environment.
 
 ---
 
 ## 🐛 Diagnostics & Known Anomalies
 
-*   **Custom Nicknames:** Renaming yourself `Admin` doesn't bypass administrative cookie gates. The systems are watching.
+*   **Custom Nicknames:** Renaming yourself `Admin` in the chat window doesn't bypass administrative cookie gates. The systems are watching.
 *   **The Clock:** Clicking the top-right clock toggles 12/24-hour modes, prompting desktop notifications directly. If you hear thoccs when clicking, your sound adapter is operating normally.
 *   **The Particles:** If your GPU fan starts sounding like a jet turbine, decrease the particle density count in `DynamicBackground.tsx` from `7000` to `3000`.
 
@@ -160,7 +132,17 @@ Instead, you found a system.
 
 We advise interacting with the **Spotlight Search (`Ctrl/Cmd + K`)** to locate remaining directories, or checking the **Lobby** to chat anonymously with other active users.
 
-*Remember: This repo was a mistake. But now that you've cloned it, you're responsible for it.*
+---
+
+## ⚖️ Usage Restrictions & Proprietary Rights
+
+This project is **not open-source** and does **not** carry a permissive license. 
+
+*   **No Redistribution/Deployment:** You may not host, publish, or redeploy this portfolio or any modified version of it under your own name or domain.
+*   **No Re-use of Assets & Design:** The unique OS-inspired layouts, Three.js particle nebula configs, interactive terminal logics, and custom UI components are copyrighted property.
+*   **Educational Use Only:** Cloning or downloading this repository is permitted **exclusively** for personal educational review or inspecting the code architecture. No other rights are granted.
+
+If you like the design, feel free to use it as inspiration to build your own unique concept, but please do not copy the source code or assets.
 
 ---
 
