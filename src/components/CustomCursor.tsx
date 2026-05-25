@@ -93,9 +93,18 @@ const CustomCursor = () => {
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 0.1 }}
               exit={{ opacity: 0, scale: 0.5 }}
-              className="text-[14px] font-bold tracking-widest text-black"
+              className="text-black flex items-center justify-center w-7 h-7"
             >
-              VIEW
+              <svg 
+                className="w-full h-full stroke-black" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                strokeWidth="3.5" 
+                strokeLinecap="round"
+              >
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
             </motion.span>
           )}
         </AnimatePresence>

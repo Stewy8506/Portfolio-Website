@@ -403,7 +403,7 @@ export default function MenuBar() {
       >
         {/* Desktop Left side */}
         <div className="hidden md:flex items-center gap-5">
-          <div className="relative">
+          <div className="relative" id="tour-anvos">
             <div 
               onClick={() => handleMenuClick("anvos")}
               onMouseEnter={() => handleMenuHover("anvos")}
@@ -442,7 +442,7 @@ export default function MenuBar() {
         <div className="flex items-center gap-4 md:text-white/80">
           <div className="flex items-center gap-2 md:gap-3">
             {/* 🎵 Lofi Music Stream Control (Hover to expand volume slider) */}
-            <div className="group flex items-center gap-1.5 px-1.5 py-0.5 rounded-lg hover:bg-white/5 transition-all duration-300">
+            <div id="tour-lofi" className="group flex items-center gap-1.5 px-1.5 py-0.5 rounded-lg hover:bg-white/5 transition-all duration-300">
               <button 
                 onClick={toggleMusic}
                 className="flex items-center justify-center p-0.5 rounded active:scale-95 transition-all text-white/90 cursor-pointer outline-none border-0 bg-transparent"
@@ -479,6 +479,7 @@ export default function MenuBar() {
             {/* 💬 Global Chat Trigger */}
             <Magnetic strength={0.4}>
               <button 
+                id="tour-chat"
                 onClick={() => setIsChatOpen(true)}
                 className="flex items-center justify-center p-1 rounded hover:bg-white/10 active:scale-95 transition-all text-white/90 cursor-pointer outline-none border-0 bg-transparent"
                 title="Open Global Chat"
@@ -501,6 +502,7 @@ export default function MenuBar() {
             {/* 🔍 Search / Spotlight Trigger */}
             <Magnetic strength={0.4}>
               <button 
+                id="tour-spotlight"
                 onClick={() => setIsSpotlightOpen(true)}
                 className="flex items-center justify-center p-1 rounded hover:bg-white/10 active:scale-95 transition-all text-white/90 cursor-pointer outline-none border-0 bg-transparent"
                 title="Spotlight Search (Cmd+K)"
