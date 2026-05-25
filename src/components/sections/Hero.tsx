@@ -74,7 +74,7 @@ export default function Hero() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
             <Button 
               variant="primary" 
-              className="group flex items-center justify-center gap-2 w-full sm:w-auto" 
+              className="group flex items-center justify-center gap-2 w-full sm:w-auto whitespace-nowrap" 
               data-cursor="button" 
               onMouseEnter={playThocc}
               onClick={() => handleScroll("projects")}
@@ -82,8 +82,8 @@ export default function Hero() {
               View Projects
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <a href="/resume.pdf" download="Anuvab_Resume.pdf" tabIndex={-1} className="w-full sm:w-auto" onMouseEnter={playThocc}>
-              <Button variant="outline" className="group flex items-center justify-center gap-2 w-full" data-cursor="button">
+            <a href="/resume.pdf" download="Anuvab_Resume.pdf" tabIndex={-1} className="w-full sm:w-auto flex" onMouseEnter={playThocc}>
+              <Button variant="outline" className="group flex items-center justify-center gap-2 w-full sm:w-auto whitespace-nowrap" data-cursor="button">
                 Download Resume
                 <Download className="w-4 h-4 group-hover:-translate-y-1 transition-transform" />
               </Button>
@@ -91,7 +91,7 @@ export default function Hero() {
             <Button 
               variant="outline" 
               data-cursor="button" 
-              className="w-full sm:w-auto justify-center" 
+              className="w-full sm:w-auto justify-center whitespace-nowrap" 
               onMouseEnter={playThocc}
               onClick={() => handleScroll("contact")}
             >

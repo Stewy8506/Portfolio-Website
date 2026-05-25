@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { User, Code2, FolderGit2, Mail } from "lucide-react";
 import { useSoundEffect } from "@/hooks/useSoundEffect";
+import Magnetic from "@/components/ui/Magnetic";
 
 export default function Dock() {
   const { playThocc } = useSoundEffect();
@@ -42,23 +43,25 @@ export default function Dock() {
       {/* Desktop macOS Dock */}
       <div className="hidden md:flex glass-effect rounded-2xl border border-white/10 p-3 items-center gap-4 shadow-2xl pointer-events-auto bg-zinc-900/60 backdrop-blur-2xl">
         {dockItems.map((item) => (
-          <a key={item.name} href={item.href} onMouseEnter={playThocc} data-cursor="none" className="group relative flex items-center justify-center">
-            {/* Tooltip */}
-            <div className="absolute -top-16 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-zinc-800/95 backdrop-blur-md text-white text-xs font-medium rounded-lg border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-xl">
-              {item.name}
-            </div>
-            
-            <motion.div 
-              whileHover={{ scale: 1.35, y: -10 }}
-              transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              className={`w-12 h-12 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg border border-white/20 relative z-10 hover:z-20`}
-            >
-              <item.icon className="w-6 h-6 text-white drop-shadow-md" />
-            </motion.div>
-            
-            {/* Active Indicator dot */}
-            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-white transition-colors" />
-          </a>
+          <Magnetic key={item.name} strength={0.4}>
+            <a href={item.href} onMouseEnter={playThocc} data-cursor="none" className="group relative flex items-center justify-center">
+              {/* Tooltip */}
+              <div className="absolute -top-16 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-zinc-800/95 backdrop-blur-md text-white text-xs font-medium rounded-lg border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-xl">
+                {item.name}
+              </div>
+              
+              <motion.div 
+                whileHover={{ scale: 1.35, y: -10 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                className={`w-12 h-12 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg border border-white/20 relative z-10 hover:z-20`}
+              >
+                <item.icon className="w-6 h-6 text-white drop-shadow-md" />
+              </motion.div>
+              
+              {/* Active Indicator dot */}
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-white transition-colors" />
+            </a>
+          </Magnetic>
         ))}
       </div>
 

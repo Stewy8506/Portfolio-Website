@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Terminal } from "lucide-react";
+import { Terminal, Power } from "lucide-react";
+import Button from "./Button";
+import { useSoundEffect } from "@/hooks/useSoundEffect";
 
 interface LoadingScreenProps {
   onComplete: () => void;
@@ -37,13 +39,10 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
       // Add natural velocity variations
       let dynamicProgress = progressPercent;
       if (progressPercent < 40) {
-        // Fast start
         dynamicProgress = progressPercent * 1.2;
       } else if (progressPercent >= 40 && progressPercent < 80) {
-        // Slow middle
         dynamicProgress = 48 + (progressPercent - 40) * 0.6;
       } else {
-        // Quick end
         dynamicProgress = 72 + (progressPercent - 80) * 1.4;
       }
 
@@ -60,10 +59,12 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
 
       if (currentStep >= steps || finalProgress >= 100) {
         clearInterval(timer);
-        // Hold at 100% briefly for polish, then fade out
+        // Hold at 100% briefly, then auto-fade out
         setTimeout(() => {
           setIsVisible(false);
-        }, 300);
+          const event = new CustomEvent('enterSite');
+          window.dispatchEvent(event);
+        }, 500);
       }
     }, intervalTime);
 
@@ -80,25 +81,19 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-zinc-950 text-white select-none overflow-hidden"
         >
           
-          {/* DESKTOP VIEWPORT: macOS Startup console layout */}
+          {/* DESKTOP VIEWPORT */}
           <div className="hidden md:flex flex-col items-center max-w-md w-full px-8">
-            {/* Glowing Custom Logo symbol */}
             <motion.div
               animate={{
                 opacity: [0.5, 1, 0.5],
                 scale: [0.98, 1, 0.98],
               }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              className="mb-8 p-5 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center justify-center shadow-lg"
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="mb-8 p-5 border rounded-2xl flex items-center justify-center shadow-lg bg-white/[0.03] border-white/10"
             >
               <Terminal className="w-10 h-10 text-emerald-400" />
             </motion.div>
 
-            {/* Simulated terminal logs */}
             <div className="w-full bg-zinc-900/60 border border-white/5 rounded-xl py-3 px-4 mb-6 font-mono text-[11px] text-zinc-400 h-32 flex flex-col justify-end gap-2 shadow-inner overflow-hidden">
               {BOOT_LOGS.slice(Math.max(0, logIndex - 3), logIndex + 1).map((log, idx) => (
                 <motion.div
@@ -113,7 +108,6 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
               ))}
             </div>
 
-            {/* Apple style slim Loading Bar */}
             <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden mb-3">
               <motion.div
                 className="h-full bg-emerald-500 rounded-full"
@@ -122,42 +116,28 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
               />
             </div>
 
-            {/* Percentage Indicator */}
-            <div className="flex justify-between w-full text-[10px] text-zinc-500 font-semibold tracking-wider uppercase">
-              <span>anv os starting</span>
-              <span>{progress}%</span>
+            <div className="flex justify-between w-full text-[10px] text-zinc-500 font-semibold tracking-wider uppercase h-10 items-start">
+              <div className="flex justify-between w-full">
+                <span>anv os starting</span>
+                <span>{progress}%</span>
+              </div>
             </div>
           </div>
 
-          {/* MOBILE VIEWPORT: iOS Circular Minimalist Logo & Spinner */}
+          {/* MOBILE VIEWPORT */}
           <div className="flex md:hidden flex-col items-center justify-center px-6">
-            
-            {/* Rotating glowing sphere symbol */}
             <div className="relative w-24 h-24 flex items-center justify-center mb-8">
-              {/* Pulse circle */}
               <motion.div 
                 animate={{
                   scale: [1, 1.25, 1],
                   opacity: [0.1, 0.25, 0.1],
                 }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute inset-0 bg-emerald-500 rounded-full"
               />
               
-              {/* Spinner ring */}
               <svg className="w-full h-full rotate-[-90deg]">
-                <circle
-                  cx="48"
-                  cy="48"
-                  r="36"
-                  className="stroke-white/10"
-                  strokeWidth="3.5"
-                  fill="transparent"
-                />
+                <circle cx="48" cy="48" r="36" className="stroke-white/10" strokeWidth="3.5" fill="transparent" />
                 <motion.circle
                   cx="48"
                   cy="48"
@@ -165,24 +145,21 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
                   className="stroke-emerald-400"
                   strokeWidth="3.5"
                   fill="transparent"
-                  strokeDasharray="226" // 2 * PI * r (36)
+                  strokeDasharray="226"
                   strokeDashoffset={226 - (226 * progress) / 100}
                 />
               </svg>
               
-              {/* Inner symbol */}
               <div className="absolute text-emerald-400 font-bold text-lg select-none">
                 {progress}%
               </div>
             </div>
 
-            <motion.span 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.6 }}
-              className="text-xs font-semibold text-zinc-400 tracking-widest uppercase mt-4"
-            >
-              Loading Portfolio
-            </motion.span>
+            <div className="h-12 flex justify-center w-full">
+              <span className="text-xs font-semibold text-zinc-400 tracking-widest uppercase mt-4">
+                Loading Portfolio
+              </span>
+            </div>
           </div>
 
         </motion.div>

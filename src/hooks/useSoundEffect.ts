@@ -66,40 +66,13 @@ export const useSoundEffect = () => {
       tapOsc.connect(tapGain);
       tapGain.connect(masterGain);
 
-      // 3. Ultra-soft muffled mechanical feedback (a tiny, deeply band-passed noise pulse)
-      // This adds that "creamy keyboard" texture without sounding scratchy or harsh.
-      const bufferSize = Math.floor(audioCtx.sampleRate * 0.02); // Very short: 20ms
-      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        data[i] = (Math.random() * 2 - 1);
-      }
-      const noiseSource = audioCtx.createBufferSource();
-      noiseSource.buffer = buffer;
-
-      // Bandpass filter to isolate the "marbly" resonance frequency (around 500Hz)
-      const noiseFilter = audioCtx.createBiquadFilter();
-      noiseFilter.type = 'bandpass';
-      noiseFilter.frequency.setValueAtTime(500, t);
-      noiseFilter.Q.setValueAtTime(3, t); // Resonant Q for a woody, hollow character
-
-      const noiseGain = audioCtx.createGain();
-      noiseGain.gain.setValueAtTime(0.15, t);
-      noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
-
-      noiseSource.connect(noiseFilter);
-      noiseFilter.connect(noiseGain);
-      noiseGain.connect(masterGain);
-
       // Start all layers
       popOsc.start(t);
       tapOsc.start(t);
-      noiseSource.start(t);
 
       // Stop all layers to release nodes
       popOsc.stop(t + 0.05);
       tapOsc.stop(t + 0.02);
-      noiseSource.stop(t + 0.03);
     } catch (e) {
       // Ignore audio errors gracefully
     }

@@ -3,6 +3,7 @@
 import FadeIn from "../ui/FadeIn";
 import Section from "../ui/Section";
 import { Terminal, Cpu, Layers } from "lucide-react";
+import GitHubStats from "./GitHubStats";
 
 export default function About() {
   return (
@@ -79,6 +80,9 @@ export default function About() {
                </p>
              </div>
           </FadeIn>
+
+          {/* GitHub Stats Card */}
+          <GitHubStats />
         </div>
 
       </div>

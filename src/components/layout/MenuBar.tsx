@@ -6,6 +6,7 @@ import { Command, Wifi, BatteryMedium, Search, MessageSquare, CornerDownLeft, Fi
 import MenuDropdown, { MenuItem } from "../ui/MenuDropdown";
 import ToastContainer, { toast } from "../ui/Toast";
 import ChatWindow from "../ui/ChatWindow";
+import { useSoundEffect } from "@/hooks/useSoundEffect";
 
 const SPOTLIGHT_ITEMS = [
   { title: "About Anuvab", category: "Navigation", desc: "Background, timeline, and professional bio", icon: FileText, action: "about" },
@@ -54,6 +55,8 @@ export default function MenuBar() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5); // Default to 50%
   const playerRef = useRef<any>(null);
+
+  const { playThocc } = useSoundEffect();
 
   // Initialize YouTube Iframe Player on mount (client-side only)
   useEffect(() => {
@@ -198,6 +201,8 @@ export default function MenuBar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+
 
   // Cmd+K or Ctrl+K shortcut for Spotlight
   useEffect(() => {
@@ -465,6 +470,8 @@ export default function MenuBar() {
                 />
               </div>
             </div>
+
+
 
             {/* 💬 Global Chat Trigger */}
             <button 

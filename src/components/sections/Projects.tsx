@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import FadeIn from "../ui/FadeIn";
 import Section from "../ui/Section";
 import { ExternalLink } from "lucide-react";
@@ -134,16 +135,22 @@ function ProjectListCard({ project, idx }: { project: any; idx: number }) {
       {/* Image Half */}
       <div className="relative h-64 md:h-auto md:w-1/2 overflow-hidden bg-zinc-950 shrink-0">
         <AnimatePresence mode="popLayout" initial={false}>
-          <motion.img 
+          <motion.div
             key={currentImageIdx}
-            src={images[currentImageIdx]} 
-            alt={`${project.title} - ${currentImageIdx + 1}`} 
             initial={{ opacity: 0, scale: 1.05 }}
             animate={{ opacity: 1, scale: isHovered ? 1.05 : 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.6, ease: "easeInOut" }}
-            className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100" 
-          />
+            className="absolute inset-0 w-full h-full"
+          >
+            <Image
+              src={images[currentImageIdx]}
+              alt={`${project.title} - ${currentImageIdx + 1}`}
+              fill
+              unoptimized={images[currentImageIdx].startsWith('http')}
+              className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+            />
+          </motion.div>
         </AnimatePresence>
 
         {/* Navigation Dots */}
