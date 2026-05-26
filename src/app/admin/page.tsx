@@ -37,6 +37,7 @@ export default function AdminDashboard() {
     link: "",
     category: DEFAULT_PROJECT_CATEGORY as ProjectCategory,
     hasLiveDemo: true,
+    isCurrentlyWorkingOn: false,
     images: [] as string[]
   });
 
@@ -159,6 +160,7 @@ export default function AdminDashboard() {
       link: project.link,
       category: normalizeProjectCategory(project.category),
       hasLiveDemo: project.hasLiveDemo !== false,
+      isCurrentlyWorkingOn: project.isCurrentlyWorkingOn || false,
       images: project.images || (project.image ? [project.image] : []),
     });
     setIsProjectModalOpen(true);
@@ -178,7 +180,7 @@ export default function AdminDashboard() {
   const closeProjectModal = () => {
     setIsProjectModalOpen(false);
     setEditingProjectId(null);
-    setNewProject({ title: "", description: "", overview: "", problem: "", liveDemoUrl: "", sourceCodeUrl: "", tech: "", link: "", category: DEFAULT_PROJECT_CATEGORY as ProjectCategory, hasLiveDemo: true, images: [] });
+    setNewProject({ title: "", description: "", overview: "", problem: "", liveDemoUrl: "", sourceCodeUrl: "", tech: "", link: "", category: DEFAULT_PROJECT_CATEGORY as ProjectCategory, hasLiveDemo: true, isCurrentlyWorkingOn: false, images: [] });
   };
 
   const closeSkillModal = () => {
@@ -678,6 +680,15 @@ export default function AdminDashboard() {
                       className="w-4 h-4 rounded border-zinc-800 bg-zinc-950 text-white focus:ring-0 focus:ring-offset-0 cursor-pointer accent-white"
                     />
                     <span>Has Live Demo / Live Site link?</span>
+                  </label>
+                  <label className="flex items-center gap-2 text-zinc-400 mb-4 cursor-pointer mt-2 w-fit">
+                    <input 
+                      type="checkbox" 
+                      checked={newProject.isCurrentlyWorkingOn}
+                      onChange={(e) => setNewProject({...newProject, isCurrentlyWorkingOn: e.target.checked})}
+                      className="w-4 h-4 rounded border-zinc-800 bg-zinc-950 text-white focus:ring-0 focus:ring-offset-0 cursor-pointer accent-white"
+                    />
+                    <span>Currently Working On?</span>
                   </label>
                 </div>
                 <div>

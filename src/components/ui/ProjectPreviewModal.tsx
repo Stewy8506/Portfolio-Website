@@ -88,13 +88,22 @@ export default function ProjectPreviewModal({ project, isOpen, onClose }: Projec
                 className="p-8 md:p-12 lg:p-16 xl:p-20 flex flex-col min-h-full"
               >
                 {/* Meta */}
-                <motion.div variants={itemVariants} className="flex items-center gap-4 mb-8">
+                <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-4 mb-8">
                   <span className="px-4 py-1.5 text-xs font-bold tracking-[0.2em] uppercase text-emerald-400 bg-emerald-400/10 rounded-full border border-emerald-400/20">
                     {project.category || "WEB"}
                   </span>
                   {project.date && (
                     <span className="text-sm font-medium text-zinc-500 tracking-widest uppercase">
                       {project.date}
+                    </span>
+                  )}
+                  {project.isCurrentlyWorkingOn && (
+                    <span className="flex items-center gap-2 px-3 py-1 text-xs font-semibold tracking-wider uppercase text-amber-400 bg-amber-400/10 rounded-full border border-amber-400/20">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                      </span>
+                      Currently Working On
                     </span>
                   )}
                 </motion.div>

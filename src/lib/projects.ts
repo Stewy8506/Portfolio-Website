@@ -13,6 +13,7 @@ export type Project = {
   liveDemoUrl?: string;
   link?: string;
   sourceCodeUrl?: string;
+  isCurrentlyWorkingOn?: boolean;
 };
 
 export const PROJECT_CATEGORIES = [

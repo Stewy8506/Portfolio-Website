@@ -83,6 +83,7 @@ export async function POST(req: NextRequest) {
       link: body.link || "",
       category: normalizeProjectCategory(body.category),
       images: body.images || (body.image ? [body.image] : ["/projects/default.jpg"]),
+      isCurrentlyWorkingOn: body.isCurrentlyWorkingOn || false,
       order: body.order !== undefined ? body.order : 999,
       createdAt: new Date().toISOString()
     });

@@ -31,6 +31,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       link: body.link,
       category: normalizeProjectCategory(body.category),
       images: body.images || (body.image ? [body.image] : ["/projects/default.jpg"]),
+      ...(body.isCurrentlyWorkingOn !== undefined && { isCurrentlyWorkingOn: body.isCurrentlyWorkingOn }),
       ...(body.order !== undefined && { order: body.order }),
       updatedAt: new Date().toISOString()
     }, { merge: true });

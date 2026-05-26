@@ -11,6 +11,7 @@ interface Project {
   category?: string;
   image?: string;
   images?: string[];
+  isCurrentlyWorkingOn?: boolean;
 }
 
 interface ProjectsCinematicProps {
@@ -68,6 +69,15 @@ export default function ProjectsCinematic({ projects, onSelect }: ProjectsCinema
                     <span className="text-xs font-semibold tracking-widest uppercase text-white/50">
                       {project.category}
                     </span>
+                    {project.isCurrentlyWorkingOn && (
+                      <>
+                        <span className="h-[1px] w-4 bg-white/20" />
+                        <span className="relative flex h-2 w-2" title="Currently Working On">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                        </span>
+                      </>
+                    )}
                   </div>
                   
                   <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter text-white mb-6 leading-none">

@@ -10,6 +10,7 @@ interface Project {
   category?: string;
   image?: string;
   images?: string[];
+  isCurrentlyWorkingOn?: boolean;
 }
 
 interface ProjectsHorizontalProps {
@@ -73,6 +74,12 @@ export default function ProjectsHorizontal({ projects, onSelect }: ProjectsHoriz
                       <span className="px-3 py-1 text-[10px] font-bold tracking-widest uppercase text-white bg-white/10 rounded-full backdrop-blur-md">
                         {project.category}
                       </span>
+                      {project.isCurrentlyWorkingOn && (
+                        <span className="relative flex h-2 w-2 ml-1" title="Currently Working On">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                        </span>
+                      )}
                     </div>
                     <h3 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-2 group-hover:text-emerald-400 transition-colors">
                       {project.title}
