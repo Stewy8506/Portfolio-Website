@@ -218,16 +218,19 @@ export default function ProjectPreviewModal({ project: incomingProject, isOpen, 
                       {project.date}
                     </span>
                   )}
-                  {project.isCurrentlyWorkingOn && (
-                    <span className="flex items-center gap-2 px-3 py-1 text-xs font-semibold tracking-wider uppercase text-amber-400 bg-amber-400/10 rounded-full border border-amber-400/20">
-                      <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-                      </span>
-                      Currently Working On
-                    </span>
-                  )}
                 </motion.div>
+
+                {project.isCurrentlyWorkingOn && (
+                  <motion.div 
+                    variants={itemVariants} 
+                    className="mb-8 px-5 py-3.5 rounded-xl border border-amber-500/10 bg-amber-500/[0.02] text-xs text-amber-400/70 leading-relaxed flex items-start gap-3"
+                  >
+                    <span className="flex h-1.5 w-1.5 rounded-full bg-amber-400/80 mt-1.5 flex-shrink-0" />
+                    <span>
+                      <strong>Development Notice:</strong> This project is actively in progress. Content, features, and system architecture are currently under development and subject to change.
+                    </span>
+                  </motion.div>
+                )}
 
                 {/* Title & Desc */}
                 <motion.div variants={itemVariants} className="mb-12">

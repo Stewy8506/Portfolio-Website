@@ -192,28 +192,22 @@ export default async function ProjectCaseStudy(props: { params: Promise<{ slug: 
 
               {/* Metadata chips row */}
               <div className="flex flex-wrap items-center gap-3 mb-10">
-                {project.category && (
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/[0.07] text-sm text-zinc-300">
-                    <Tag className="w-3.5 h-3.5 text-zinc-500" />
-                    {project.category}
-                  </div>
-                )}
                 {project.date && (
                   <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/[0.07] text-sm text-zinc-300">
                     <Calendar className="w-3.5 h-3.5 text-zinc-500" />
                     {project.date}
                   </div>
                 )}
-                {project.isCurrentlyWorkingOn && (
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-400/[0.06] border border-amber-400/20 text-sm text-amber-400 font-medium">
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
-                    </span>
-                    Active Project
-                  </div>
-                )}
               </div>
+
+              {project.isCurrentlyWorkingOn && (
+                <div className="mb-10 px-5 py-3.5 rounded-2xl border border-amber-500/10 bg-amber-500/[0.02] text-xs text-amber-400/70 leading-relaxed max-w-2xl flex items-start gap-3">
+                  <span className="flex h-1.5 w-1.5 rounded-full bg-amber-400/80 mt-1.5 flex-shrink-0" />
+                  <span>
+                    <strong>Development Notice:</strong> This project is actively in progress. Content, features, and system architecture are currently under development and subject to change.
+                  </span>
+                </div>
+              )}
 
               {/* Tech stack */}
               {project.tech && project.tech.length > 0 && (
@@ -455,28 +449,22 @@ export default async function ProjectCaseStudy(props: { params: Promise<{ slug: 
 
         {/* Metadata chips row */}
         <div className="flex flex-wrap items-center gap-3 mb-10">
-          {project.category && (
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/[0.07] text-sm text-zinc-300">
-              <Tag className="w-3.5 h-3.5 text-zinc-500" />
-              {project.category}
-            </div>
-          )}
           {project.date && (
             <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/[0.07] text-sm text-zinc-300">
               <Calendar className="w-3.5 h-3.5 text-zinc-500" />
               {project.date}
             </div>
           )}
-          {project.isCurrentlyWorkingOn && (
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-400/[0.06] border border-amber-400/20 text-sm text-amber-400 font-medium">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
-              </span>
-              Active Project
-            </div>
-          )}
         </div>
+
+        {project.isCurrentlyWorkingOn && (
+          <div className="mb-10 px-5 py-3.5 rounded-2xl border border-amber-500/10 bg-amber-500/[0.02] text-xs text-amber-400/70 leading-relaxed max-w-2xl flex items-start gap-3">
+            <span className="flex h-1.5 w-1.5 rounded-full bg-amber-400/80 mt-1.5 flex-shrink-0" />
+            <span>
+              <strong>Development Notice:</strong> This project is actively in progress. Content, features, and system architecture are currently under development and subject to change.
+            </span>
+          </div>
+        )}
 
         {/* Tech stack */}
         {project.tech && project.tech.length > 0 && (

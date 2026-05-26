@@ -36,6 +36,7 @@ export default function TerminalWindow() {
   // Listen for hotkeys and custom events
   useEffect(() => {
     const handleGlobalKeys = (e: KeyboardEvent) => {
+      if (window.innerWidth < 768) return; // Disable on mobile/phone screens
       if ((e.metaKey || e.ctrlKey) && e.key === "q") {
         e.preventDefault();
         setIsOpen((prev) => !prev);
@@ -45,7 +46,10 @@ export default function TerminalWindow() {
       }
     };
 
-    const handleToggleEvent = () => setIsOpen(prev => !prev);
+    const handleToggleEvent = () => {
+      if (window.innerWidth < 768) return; // Disable on mobile/phone screens
+      setIsOpen(prev => !prev);
+    };
 
     window.addEventListener("keydown", handleGlobalKeys);
     window.addEventListener("toggleTerminal", handleToggleEvent);

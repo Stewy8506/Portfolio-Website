@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import FadeIn from "../ui/FadeIn";
 import Button from "../ui/Button";
 import { ArrowRight, Download } from "lucide-react";
@@ -12,6 +12,18 @@ import { scrollToSection } from "@/lib/navigation";
 
 export default function Hero() {
   const { playThocc } = useSoundEffect();
+  const [employed, setEmployed] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    fetch("/api/config")
+      .then((res) => res.json())
+      .then((data) => {
+        setEmployed(data.employed);
+      })
+      .catch(() => {
+        setEmployed(false); // default to showing if query fails
+      });
+  }, []);
 
   const handleScroll = (id: string) => {
     scrollToSection(id);
@@ -60,25 +72,56 @@ export default function Hero() {
       />
 
       <div className="relative z-10 text-center px-6 max-w-4xl">
-        <FadeIn delay={0.15}>
-          <div className="flex justify-center mb-8">
-            <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-emerald-500/[0.1] border border-emerald-500/[0.2] backdrop-blur-md shadow-[0_0_20px_rgba(6,182,212,0.1)]">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span className="text-sm font-medium text-emerald-400 tracking-wide uppercase text-xs">
-                Available for new opportunities
-              </span>
+        {employed === false && (
+          <FadeIn delay={0.15}>
+            <div className="flex justify-center mb-8">
+              <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-emerald-500/[0.1] border border-emerald-500/[0.2] backdrop-blur-md shadow-[0_0_20px_rgba(6,182,212,0.1)]">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span className="text-[10px] font-semibold text-emerald-400/80 tracking-[0.18em] uppercase">
+                  Available for new opportunities
+                </span>
+              </div>
             </div>
-          </div>
-        </FadeIn>
+          </FadeIn>
+        )}
 
         <FadeIn delay={0.2}>
           <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-[5.5rem] xl:text-[6.5rem] font-bold tracking-tighter leading-none mb-4 whitespace-nowrap">
             Hi, I&apos;m{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-200 to-emerald-500">
-              Anuvab
+            <span className="relative inline-block">
+              {/* Radiant Glow Backdrop */}
+              <span
+                className="absolute inset-0 bg-clip-text text-transparent bg-gradient-to-r from-emerald-300 to-emerald-400 select-none pointer-events-none"
+                style={{ filter: "blur(14px)", opacity: 0.3 }}
+              >
+                Anuvab
+              </span>
+              <span className="relative z-10 bg-clip-text text-transparent bg-gradient-to-r from-emerald-200 to-emerald-500">
+                Anuvab
+              </span>
+              {/* Sparkle 1: Top left vertex of 'A' */}
+              <div className="absolute pointer-events-none z-10" style={{ top: "-15%", left: "6%", filter: "drop-shadow(0 0 5px #fff) drop-shadow(0 0 10px rgba(34, 211, 238, 0.85))" }}>
+                <div className="sparkle-star" style={{ animationDelay: "0s" }} />
+              </div>
+              {/* Sparkle 2: Top curve of 'n' */}
+              <div className="absolute pointer-events-none z-10" style={{ top: "25%", left: "30%", filter: "drop-shadow(0 0 5px #fff) drop-shadow(0 0 10px rgba(34, 211, 238, 0.85))" }}>
+                <div className="sparkle-star" style={{ animationDelay: "0.6s" }} />
+              </div>
+              {/* Sparkle 3: Junction of 'u' and 'v' */}
+              <div className="absolute pointer-events-none z-10" style={{ top: "20%", left: "48%", filter: "drop-shadow(0 0 5px #fff) drop-shadow(0 0 10px rgba(34, 211, 238, 0.85))" }}>
+                <div className="sparkle-star" style={{ animationDelay: "1.2s" }} />
+              </div>
+              {/* Sparkle 4: Top bend of 'a' */}
+              <div className="absolute pointer-events-none z-10" style={{ top: "30%", left: "66%", filter: "drop-shadow(0 0 5px #fff) drop-shadow(0 0 10px rgba(34, 211, 238, 0.85))" }}>
+                <div className="sparkle-star" style={{ animationDelay: "1.8s" }} />
+              </div>
+              {/* Sparkle 5: Tall vertical stalk tip of 'b' */}
+              <div className="absolute pointer-events-none z-10" style={{ top: "-20%", left: "86%", filter: "drop-shadow(0 0 5px #fff) drop-shadow(0 0 10px rgba(34, 211, 238, 0.85))" }}>
+                <div className="sparkle-star" style={{ animationDelay: "2.4s" }} />
+              </div>
             </span>
             <span className="text-emerald-500">.</span>
           </h1>

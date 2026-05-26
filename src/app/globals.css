@@ -152,3 +152,30 @@ body {
   pointer-events: none;
   z-index: 0;
 }
+
+/* Bejeweled 4-Point Sparkle Star */
+.sparkle-star {
+  width: 14px;
+  height: 14px;
+  background: #ffffff;
+  clip-path: polygon(50% 0%, 57% 43%, 100% 50%, 57% 57%, 50% 100%, 43% 57%, 0% 50%, 43% 43%);
+  animation: sparkle-animation 3s ease-in-out infinite;
+  opacity: 0;
+}
+
+@keyframes sparkle-animation {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  10% {
+    opacity: 1;
+    transform: scale(1.2) rotate(45deg);
+  }
+  20% {
+    opacity: 0;
+    transform: scale(0) rotate(90deg);
+  }
+}
+
+

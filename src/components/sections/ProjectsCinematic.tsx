@@ -11,6 +11,7 @@ interface Project {
   category?: string;
   image?: string;
   images?: string[];
+  imageType?: "phone" | "desktop" | "auto";
   isCurrentlyWorkingOn?: boolean;
 }
 
@@ -39,6 +40,9 @@ function CinematicCard({
       ? project.images[0]
       : project.image || "/projects/default.jpg";
   const isRemote = typeof thumbnail === "string" && thumbnail.startsWith("http");
+  const resolvedImageType =
+    project.imageType ??
+    (project.category?.toLowerCase().includes("mobile") ? "phone" : "auto");
 
   // Parallax: background drifts slower than scroll, foreground faster
   const bgY = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
@@ -128,15 +132,50 @@ function CinematicCard({
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="flex-1 w-full h-[40%] md:h-[70%] min-h-[30vh] relative group-hover:scale-[1.03] transition-transform duration-1000 ease-out flex items-center justify-center"
           >
-            <div className="relative w-full h-full">
-              <Image
-                src={thumbnail}
-                alt={project.title}
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                unoptimized={isRemote}
-                className="object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]"
-              />
+            <div className="relative w-full h-full flex items-center justify-center">
+              {resolvedImageType === "phone" ? (
+                /* Pure CSS Phone Mockup Frame for Mobile Apps in Cinematic view */
+                <div
+                  className="relative rounded-[2.5rem] overflow-hidden select-none pointer-events-none shadow-[0_30px_60px_rgba(0,0,0,0.8)]"
+                  style={{
+                    width: "min(220px, 50vw)",
+                    background: "linear-gradient(145deg, #2a2a2e 0%, #1a1a1e 40%, #0f0f12 100%)",
+                    padding: "3px",
+                    boxShadow:
+                      "0 0 0 1px rgba(255,255,255,0.08), 0 32px 80px -12px rgba(0,0,0,0.9), 0 0 60px -20px rgba(6,182,212,0.12), inset 0 1px 0 rgba(255,255,255,0.12)",
+                  }}
+                >
+                  {/* Bezel details */}
+                  <div className="absolute -left-[3px] top-[76px] w-[3px] h-6 rounded-l-full bg-zinc-700" />
+                  <div className="absolute -left-[3px] top-[112px] w-[3px] h-6 rounded-l-full bg-zinc-700" />
+                  <div className="absolute -right-[3px] top-[92px] w-[3px] h-10 rounded-r-full bg-zinc-700" />
+
+                  {/* Inner Bezel Screen */}
+                  <div className="relative rounded-[2.25rem] overflow-hidden bg-black">
+                    <div className="relative" style={{ aspectRatio: "9/19.5" }}>
+                      <Image
+                        src={thumbnail}
+                        alt={project.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        unoptimized={isRemote}
+                        className="object-cover object-top"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-tr from-black/20 via-transparent to-white/5" />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Widescreen/Desktop screenshot style */
+                <Image
+                  src={thumbnail}
+                  alt={project.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  unoptimized={isRemote}
+                  className="object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]"
+                />
+              )}
             </div>
           </motion.div>
         </motion.div>

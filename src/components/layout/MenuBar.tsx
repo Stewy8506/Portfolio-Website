@@ -534,7 +534,7 @@ export default function MenuBar() {
             <Magnetic strength={0.4}>
               <button
                 onClick={() => window.dispatchEvent(new CustomEvent('toggleTerminal'))}
-                className="flex items-center justify-center p-1 rounded hover:bg-white/10 active:scale-95 transition-all text-white/90 cursor-pointer outline-none border-0 bg-transparent"
+                className="hidden md:flex items-center justify-center p-1 rounded hover:bg-white/10 active:scale-95 transition-all text-white/90 cursor-pointer outline-none border-0 bg-transparent"
                 title="Open Terminal (Cmd+Q)"
               >
                 <Terminal className="w-4 h-4 md:w-3.5 md:h-3.5 text-emerald-400 hover:text-white" />

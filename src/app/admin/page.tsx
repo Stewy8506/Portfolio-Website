@@ -31,6 +31,9 @@ export default function AdminDashboard() {
     description: "",
     overview: "",
     problem: "",
+    solution: "",
+    approach: "",
+    learnings: "",
     liveDemoUrl: "",
     sourceCodeUrl: "",
     tech: "",
@@ -66,10 +69,43 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  const [employedStatus, setEmployedStatus] = useState<boolean | null>(null);
+
   useEffect(() => {
     fetchProjects();
     fetchSkills();
+    fetchEmploymentStatus();
   }, []);
+
+  const fetchEmploymentStatus = async () => {
+    try {
+      const res = await fetch("/api/config");
+      const data = await res.json();
+      setEmployedStatus(data.employed);
+    } catch (error) {
+      console.error("Failed to fetch employment status.");
+    }
+  };
+
+  const updateEmploymentStatus = async (status: boolean) => {
+    setEmployedStatus(status);
+    try {
+      const res = await fetch("/api/config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ employed: status }),
+      });
+      if (res.ok) {
+        toast(`Employment status updated successfully to ${status ? "Yes" : "No"}.`, "success");
+      } else {
+        toast("Failed to update employment status.", "error");
+        fetchEmploymentStatus();
+      }
+    } catch (error) {
+      toast("An error occurred.", "error");
+      fetchEmploymentStatus();
+    }
+  };
 
   const fetchProjects = async () => {
     try {
@@ -161,6 +197,9 @@ export default function AdminDashboard() {
       description: project.description,
       overview: project.overview || "",
       problem: project.problem || "",
+      solution: project.solution || "",
+      approach: project.approach || "",
+      learnings: project.learnings || "",
       liveDemoUrl: project.liveDemoUrl || "",
       sourceCodeUrl: project.sourceCodeUrl || "",
       tech: project.tech.join(", "),
@@ -196,6 +235,9 @@ export default function AdminDashboard() {
       description: "",
       overview: "",
       problem: "",
+      solution: "",
+      approach: "",
+      learnings: "",
       liveDemoUrl: "",
       sourceCodeUrl: "",
       tech: "",
@@ -406,6 +448,39 @@ export default function AdminDashboard() {
             </button>
           </div>
         </header>
+
+        {/* Settings Bar */}
+        <div className="bg-zinc-900 p-4 rounded-lg border border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-zinc-200">Employment Status</span>
+            <span className="text-xs text-zinc-400">When "No", your portfolio will show "Available for new opportunities".</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-zinc-400">Employed:</span>
+            <div className="inline-flex rounded-lg p-0.5 bg-zinc-950 border border-zinc-800">
+              <button
+                onClick={() => updateEmploymentStatus(true)}
+                className={`px-3 py-1 text-xs font-bold rounded-md transition-all duration-300 ${
+                  employedStatus === true
+                    ? "bg-zinc-100 text-zinc-950 shadow-sm"
+                    : "text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => updateEmploymentStatus(false)}
+                className={`px-3 py-1 text-xs font-bold rounded-md transition-all duration-300 ${
+                  employedStatus === false
+                    ? "bg-zinc-100 text-zinc-950 shadow-sm"
+                    : "text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
 
         {/* Tabs */}
         <div className="flex gap-2 border-b border-zinc-800 pb-2">
@@ -668,6 +743,30 @@ export default function AdminDashboard() {
                   <textarea 
                     value={newProject.problem}
                     onChange={(e) => setNewProject({...newProject, problem: e.target.value})}
+                    className="w-full px-3 py-2 rounded-md bg-zinc-950 border border-zinc-800 focus:border-zinc-600 focus:outline-none transition-colors h-24 resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-zinc-400 mb-1">The Solution</label>
+                  <textarea 
+                    value={newProject.solution}
+                    onChange={(e) => setNewProject({...newProject, solution: e.target.value})}
+                    className="w-full px-3 py-2 rounded-md bg-zinc-950 border border-zinc-800 focus:border-zinc-600 focus:outline-none transition-colors h-24 resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-zinc-400 mb-1">The Approach</label>
+                  <textarea 
+                    value={newProject.approach}
+                    onChange={(e) => setNewProject({...newProject, approach: e.target.value})}
+                    className="w-full px-3 py-2 rounded-md bg-zinc-950 border border-zinc-800 focus:border-zinc-600 focus:outline-none transition-colors h-24 resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-zinc-400 mb-1">Key Learnings</label>
+                  <textarea 
+                    value={newProject.learnings}
+                    onChange={(e) => setNewProject({...newProject, learnings: e.target.value})}
                     className="w-full px-3 py-2 rounded-md bg-zinc-950 border border-zinc-800 focus:border-zinc-600 focus:outline-none transition-colors h-24 resize-none"
                   />
                 </div>
