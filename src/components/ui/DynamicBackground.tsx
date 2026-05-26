@@ -117,10 +117,30 @@ function ParticleField() {
 export default function DynamicBackground() {
   return (
     <div className="fixed inset-0 -z-10 bg-black pointer-events-none">
-      <Canvas camera={{ position: [0, 0, 15], fov: 60 }}>
-        {/* Soft fog to gently fade out distant particles into the black base */}
+      <Canvas 
+        camera={{ position: [0, 0, 15], fov: 60 }}
+        gl={{ preserveDrawingBuffer: true, alpha: true }}
+        onCreated={({ gl }) => {
+          gl.autoClearColor = false;
+        }}
+      >
         <fog attach="fog" args={["#000000", 8, 25]} />
-        <ParticleField />
+        
+        {/* Motion blur / trail fade layer */}
+        <mesh position={[0, 0, -10]} renderOrder={1}>
+          <planeGeometry args={[1000, 1000]} />
+          <meshBasicMaterial 
+            color="#000000" 
+            transparent 
+            opacity={0.25} 
+            depthWrite={false} 
+            depthTest={false} 
+          />
+        </mesh>
+
+        <group renderOrder={2}>
+          <ParticleField />
+        </group>
       </Canvas>
     </div>
   );

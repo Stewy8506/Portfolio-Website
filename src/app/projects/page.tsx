@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, LayoutGrid, Rows, Maximize } from "lucide-react";
+import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import ProjectPreviewModal from "@/components/ui/ProjectPreviewModal";
 import ProjectsCinematic from "../../components/sections/ProjectsCinematic";
 import ProjectsHorizontal from "../../components/sections/ProjectsHorizontal";
@@ -15,6 +16,22 @@ export default function AllProjectsPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("cinematic");
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const [filter, setFilter] = useState("All");
+
+  // Smart Header Scroll Tracking
+  const { scrollY } = useScroll();
+  const [headerVisible, setHeaderVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    if (latest < 50) {
+      setHeaderVisible(true);
+    } else if (latest > lastScrollY && latest > 150) {
+      setHeaderVisible(false);
+    } else if (latest < lastScrollY) {
+      setHeaderVisible(true);
+    }
+    setLastScrollY(latest);
+  });
 
   useEffect(() => {
     async function loadProjects() {
@@ -46,8 +63,16 @@ export default function AllProjectsPage() {
 
   return (
     <main className="min-h-screen bg-zinc-950 text-white relative z-0 flex flex-col">
-      {/* Header */}
-      <header className="fixed top-0 z-40 w-full bg-zinc-950/80 backdrop-blur-xl border-b border-white/5 py-4 px-6 lg:px-12 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Smart Animated Header */}
+      <motion.header 
+        variants={{
+          visible: { y: 0, opacity: 1 },
+          hidden: { y: "-100%", opacity: 0 }
+        }}
+        animate={headerVisible ? "visible" : "hidden"}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="fixed top-0 z-40 w-full bg-zinc-950/80 backdrop-blur-xl border-b border-white/5 py-4 px-6 lg:px-12 flex flex-col md:flex-row md:items-center justify-between gap-4"
+      >
         <div className="flex items-center gap-6">
           <Link 
             href="/#projects" 
@@ -97,10 +122,12 @@ export default function AllProjectsPage() {
             <Maximize size={14} /> <span className="hidden sm:inline">Gallery</span>
           </button>
         </div>
-      </header>
+      </motion.header>
       
       {/* Dynamic Viewport */}
-      <div className="flex-1 w-full relative pt-[150px] md:pt-[88px]">
+      <div className={`flex-1 w-full relative ${
+        viewMode === "horizontal" ? "" : "pt-[150px] md:pt-[88px]"
+      }`}>
         {viewMode === "cinematic" && <ProjectsCinematic projects={filteredProjects} onSelect={setSelectedProject} />}
         {viewMode === "horizontal" && <ProjectsHorizontal projects={filteredProjects} onSelect={setSelectedProject} />}
       </div>

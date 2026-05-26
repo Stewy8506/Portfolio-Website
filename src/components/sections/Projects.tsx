@@ -207,9 +207,17 @@ function ProjectListCard({ project, idx, onClick }: { project: Project; idx: num
       {/* Content Half */}
       <div className="p-8 md:p-12 md:w-1/2 flex flex-col justify-center relative z-10">
         <div className="flex items-center justify-between mb-6">
-          <span className="text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-emerald-400">
-            {project.category}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-emerald-400">
+              {project.category}
+            </span>
+            {project.isCurrentlyWorkingOn && (
+              <span className="relative flex h-2 w-2" title="Currently Working On">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+              </span>
+            )}
+          </div>
           <div className="flex gap-4">
             {project.sourceCodeUrl && (
               <a href={project.sourceCodeUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>

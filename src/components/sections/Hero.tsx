@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useEffect } from "react";
 import FadeIn from "../ui/FadeIn";
 import Button from "../ui/Button";
 import { ArrowRight, Download } from "lucide-react";
@@ -16,20 +17,46 @@ export default function Hero() {
     scrollToSection(id);
   };
 
+  // Mouse-tracking gradient orbs
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
+  const springX = useSpring(mouseX, { stiffness: 60, damping: 20 });
+  const springY = useSpring(mouseY, { stiffness: 60, damping: 20 });
+
+  const gradientX = useTransform(springX, [0, 1], ["20%", "80%"]);
+  const gradientY = useTransform(springY, [0, 1], ["20%", "80%"]);
+
+  useEffect(() => {
+    const handleMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX / window.innerWidth);
+      mouseY.set(e.clientY / window.innerHeight);
+    };
+    window.addEventListener("mousemove", handleMove);
+    return () => window.removeEventListener("mousemove", handleMove);
+  }, [mouseX, mouseY]);
+
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Glow */}
+
+      {/* Dynamic mouse-tracking gradient orb */}
+      <motion.div
+        style={{ left: gradientX, top: gradientY }}
+        className="absolute -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
+        animate={{ opacity: [0.12, 0.22, 0.12] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <div className="w-full h-full rounded-full bg-emerald-500/20 blur-[120px]" />
+      </motion.div>
+
+      {/* Secondary ambient orb — opposite corner drift */}
       <motion.div
         animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3],
+          x: ["-10%", "10%", "-10%"],
+          y: ["5%", "-5%", "5%"],
+          opacity: [0.06, 0.14, 0.06],
         }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute inset-0 bg-gradient-radial pointer-events-none"
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-white/5 blur-[100px] pointer-events-none"
       />
 
       <div className="relative z-10 text-center px-6 max-w-4xl">
@@ -48,7 +75,7 @@ export default function Hero() {
         </FadeIn>
 
         <FadeIn delay={0.2}>
-          <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-tight mb-4">
+          <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-[10rem] font-bold tracking-tighter leading-none mb-4">
             Hi, I'm <br className="md:hidden" />
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-200 to-emerald-500">
               Anuvab
@@ -58,22 +85,22 @@ export default function Hero() {
         </FadeIn>
 
         <FadeIn delay={0.25}>
-          <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-zinc-400 mb-8 max-w-3xl mx-auto leading-tight">
-            Building the <span className="text-white">future of digital</span> experiences.
+          <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-medium tracking-tight text-zinc-400 mb-8 max-w-3xl mx-auto leading-tight">
+            Building the <span className="text-white font-semibold">future of digital</span> experiences.
           </h2>
         </FadeIn>
 
-          <TextReveal delay={0.3} className="text-lg md:text-xl text-muted mb-10 max-w-2xl mx-auto text-balance justify-center text-center">
-            Full stack developer specializing in high-performance apps with React Native, Flutter, and AI-driven products. Crafting minimal, premium interfaces.
-          </TextReveal>
+        <TextReveal delay={0.3} className="text-lg md:text-xl text-muted mb-10 max-w-2xl mx-auto text-balance justify-center text-center">
+          Full stack developer specializing in high-performance apps with React Native, Flutter, and AI-driven products. Crafting minimal, premium interfaces.
+        </TextReveal>
 
         <FadeIn delay={0.4}>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
             <Magnetic strength={0.2}>
-              <Button 
-                variant="primary" 
-                className="group flex items-center justify-center gap-2 w-full sm:w-auto whitespace-nowrap" 
-                data-cursor="button" 
+              <Button
+                variant="primary"
+                className="group flex items-center justify-center gap-2 w-full sm:w-auto whitespace-nowrap"
+                data-cursor="button"
                 onMouseEnter={playThocc}
                 onClick={() => handleScroll("projects")}
               >
@@ -90,10 +117,10 @@ export default function Hero() {
               </a>
             </Magnetic>
             <Magnetic strength={0.2}>
-              <Button 
-                variant="outline" 
-                data-cursor="button" 
-                className="w-full sm:w-auto justify-center whitespace-nowrap" 
+              <Button
+                variant="outline"
+                data-cursor="button"
+                className="w-full sm:w-auto justify-center whitespace-nowrap"
                 onMouseEnter={playThocc}
                 onClick={() => handleScroll("contact")}
               >
