@@ -3,10 +3,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ArrowRight } from "lucide-react";
+import { X, ArrowRight, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import { GitHubIcon } from "./BrandIcons";
 import { getProjectLiveUrl, type Project } from "@/lib/projects";
+import Link from "next/link";
+import MermaidDiagram from "./MermaidDiagram";
 
 interface ProjectPreviewModalProps {
   project: Project | null;
@@ -175,30 +177,40 @@ export default function ProjectPreviewModal({ project: incomingProject, isOpen, 
                   </div>
 
                   {/* Actions */}
-                  <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                    {liveUrl && (
-                      <a
-                        href={liveUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group relative flex-1 overflow-hidden rounded-xl bg-white text-black font-bold text-sm h-14 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                      >
-                        <span className="relative z-10 flex items-center gap-2">
-                          View Live Site <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                        </span>
-                        <div className="absolute inset-0 bg-zinc-200 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-                      </a>
-                    )}
-                    {project.sourceCodeUrl && (
-                      <a
-                        href={project.sourceCodeUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group flex-1 flex items-center justify-center gap-2 h-14 rounded-xl bg-transparent border border-white/20 text-white font-bold text-sm hover:bg-white/5 transition-colors"
-                      >
-                        Source Code <GitHubIcon className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
-                      </a>
-                    )}
+                  <div className="flex flex-col gap-3 pt-4">
+                    <Link
+                      href={`/projects/${project.id || project.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                      onClick={onClose}
+                      className="group relative w-full overflow-hidden rounded-xl bg-white text-black font-bold text-sm h-14 flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99] transition-all"
+                    >
+                      <span className="relative z-10 flex items-center gap-2">
+                        Read Full Case Study <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                      </span>
+                      <div className="absolute inset-0 bg-zinc-200 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+                    </Link>
+
+                    <div className="flex flex-col sm:flex-row gap-3 w-full">
+                      {liveUrl && (
+                        <a
+                          href={liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group flex-1 flex items-center justify-center gap-2 h-12 rounded-xl bg-white/[0.04] border border-white/10 text-white font-bold text-xs hover:bg-white/10 transition-all hover:scale-[1.01]"
+                        >
+                          Live Site <ExternalLink size={14} className="opacity-70 group-hover:opacity-100 transition-opacity" />
+                        </a>
+                      )}
+                      {project.sourceCodeUrl && (
+                        <a
+                          href={project.sourceCodeUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group flex-1 flex items-center justify-center gap-2 h-12 rounded-xl bg-transparent border border-white/20 text-white font-bold text-xs hover:bg-white/5 transition-colors"
+                        >
+                          Source Code <GitHubIcon className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 transition-opacity" />
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               </motion.div>
@@ -232,6 +244,72 @@ export default function ProjectPreviewModal({ project: incomingProject, isOpen, 
                     />
                   </motion.div>
                 ))}
+
+                {/* Dynamic Case Study Additions in Modal */}
+                {(project.architectureDiagram || project.databaseSchema || project.stateManagement || (project.challenges && project.challenges.length > 0)) && (
+                  <div className="pt-12 border-t border-white/5 space-y-12">
+                    
+                    {/* Architecture & DB schema */}
+                    {(project.architectureDiagram || project.databaseSchema) && (
+                      <div className="space-y-8">
+                        <h4 className="text-xs font-semibold tracking-widest text-zinc-500 uppercase border-b border-white/5 pb-4">
+                          System Layouts
+                        </h4>
+
+                        {project.architectureDiagram && (
+                          <div className="space-y-3">
+                            <span className="text-xs font-semibold text-zinc-400">Architecture Flow</span>
+                            <MermaidDiagram code={project.architectureDiagram} id={`${project.id || 'modal'}-modal-arch`} />
+                          </div>
+                        )}
+
+                        {project.databaseSchema && (
+                          <div className="space-y-3">
+                            <span className="text-xs font-semibold text-zinc-400">Database ERD</span>
+                            <MermaidDiagram code={project.databaseSchema} id={`${project.id || 'modal'}-modal-db`} />
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* State Management */}
+                    {project.stateManagement && (
+                      <div className="space-y-4">
+                        <h4 className="text-xs font-semibold tracking-widest text-zinc-500 uppercase border-b border-white/5 pb-4">
+                          State Management
+                        </h4>
+                        <div className="glass-effect rounded-2xl border border-white/[0.04] bg-white/[0.01] p-6 text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap">
+                          {project.stateManagement}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Challenges */}
+                    {project.challenges && project.challenges.length > 0 && (
+                      <div className="space-y-6">
+                        <h4 className="text-xs font-semibold tracking-widest text-zinc-500 uppercase border-b border-white/5 pb-4">
+                          Technical Challenges
+                        </h4>
+                        <div className="grid gap-4">
+                          {project.challenges.map((challenge, idx) => (
+                            <div key={idx} className="glass-effect rounded-2xl border border-white/[0.04] bg-white/[0.01] p-5 text-sm space-y-3">
+                              <h5 className="font-bold text-zinc-200">{challenge.title}</h5>
+                              <div className="space-y-1">
+                                <span className="text-[9px] font-bold text-rose-400 uppercase tracking-wider">Problem</span>
+                                <p className="text-zinc-400 leading-relaxed text-xs">{challenge.description}</p>
+                              </div>
+                              <div className="space-y-1 pt-2 border-t border-white/[0.04]">
+                                <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-wider">Solution</span>
+                                <p className="text-zinc-400 leading-relaxed text-xs">{challenge.solution}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                  </div>
+                )}
               </div>
             </div>
 
