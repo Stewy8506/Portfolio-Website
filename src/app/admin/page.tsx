@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, LogOut, Save, ExternalLink, Upload, Image as ImageIcon, X, Search, Filter, Edit2, LayoutTemplate, Wrench, GripVertical } from "lucide-react";
+import { Plus, Trash2, LogOut, Save, ExternalLink, Upload, Image as ImageIcon, X, Search, Filter, Edit2, LayoutTemplate, Wrench, GripVertical, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "@/components/ui/Toast";
 import {
   DEFAULT_PROJECT_CATEGORY,
@@ -38,8 +38,15 @@ export default function AdminDashboard() {
     category: DEFAULT_PROJECT_CATEGORY as ProjectCategory,
     hasLiveDemo: true,
     isCurrentlyWorkingOn: false,
-    images: [] as string[]
+    images: [] as string[],
+    architectureDiagram: "",
+    databaseSchema: "",
+    stateManagement: "",
+    challenges: [] as Array<{ title: string; description: string; solution: string }>
   });
+
+  const [showArchitecture, setShowArchitecture] = useState(false);
+  const [challengeInput, setChallengeInput] = useState({ title: "", description: "", solution: "" });
 
   // Skills Modal
   const [isSkillModalOpen, setIsSkillModalOpen] = useState(false);
@@ -162,6 +169,10 @@ export default function AdminDashboard() {
       hasLiveDemo: project.hasLiveDemo !== false,
       isCurrentlyWorkingOn: project.isCurrentlyWorkingOn || false,
       images: project.images || (project.image ? [project.image] : []),
+      architectureDiagram: project.architectureDiagram || "",
+      databaseSchema: project.databaseSchema || "",
+      stateManagement: project.stateManagement || "",
+      challenges: project.challenges || [],
     });
     setIsProjectModalOpen(true);
   };
@@ -180,7 +191,26 @@ export default function AdminDashboard() {
   const closeProjectModal = () => {
     setIsProjectModalOpen(false);
     setEditingProjectId(null);
-    setNewProject({ title: "", description: "", overview: "", problem: "", liveDemoUrl: "", sourceCodeUrl: "", tech: "", link: "", category: DEFAULT_PROJECT_CATEGORY as ProjectCategory, hasLiveDemo: true, isCurrentlyWorkingOn: false, images: [] });
+    setNewProject({
+      title: "",
+      description: "",
+      overview: "",
+      problem: "",
+      liveDemoUrl: "",
+      sourceCodeUrl: "",
+      tech: "",
+      link: "",
+      category: DEFAULT_PROJECT_CATEGORY as ProjectCategory,
+      hasLiveDemo: true,
+      isCurrentlyWorkingOn: false,
+      images: [],
+      architectureDiagram: "",
+      databaseSchema: "",
+      stateManagement: "",
+      challenges: []
+    });
+    setShowArchitecture(false);
+    setChallengeInput({ title: "", description: "", solution: "" });
   };
 
   const closeSkillModal = () => {
@@ -737,6 +767,131 @@ export default function AdminDashboard() {
                       <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
                     </label>
                   </div>
+                </div>
+
+                <div className="border-t border-zinc-800 pt-4 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => setShowArchitecture(!showArchitecture)}
+                    className="w-full flex items-center justify-between py-2 text-zinc-300 hover:text-white font-medium border border-zinc-800 bg-zinc-900/50 px-3 rounded-md transition-colors"
+                  >
+                    <span>Architecture Case Study (Optional)</span>
+                    {showArchitecture ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </button>
+
+                  {showArchitecture && (
+                    <div className="space-y-4 mt-4 p-4 rounded-md border border-zinc-800 bg-zinc-950/40">
+                      <div>
+                        <label className="block text-zinc-400 mb-1">Architecture Diagram (Mermaid syntax)</label>
+                        <textarea
+                          value={newProject.architectureDiagram}
+                          onChange={(e) => setNewProject({...newProject, architectureDiagram: e.target.value})}
+                          placeholder="graph TD;&#10;  A[Frontend] --> B[Backend];"
+                          className="w-full px-3 py-2 rounded-md bg-zinc-950 border border-zinc-800 focus:border-zinc-600 focus:outline-none transition-colors h-24 font-mono text-xs resize-y"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-zinc-400 mb-1">Database Schema (Mermaid syntax)</label>
+                        <textarea
+                          value={newProject.databaseSchema}
+                          onChange={(e) => setNewProject({...newProject, databaseSchema: e.target.value})}
+                          placeholder="erDiagram;&#10;  USER ||--o{ POST : writes"
+                          className="w-full px-3 py-2 rounded-md bg-zinc-950 border border-zinc-800 focus:border-zinc-600 focus:outline-none transition-colors h-24 font-mono text-xs resize-y"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-zinc-400 mb-1">State Management Details</label>
+                        <textarea
+                          value={newProject.stateManagement}
+                          onChange={(e) => setNewProject({...newProject, stateManagement: e.target.value})}
+                          placeholder="Describe the state management approach (e.g., Zustand with global slice, local React state for modal forms)..."
+                          className="w-full px-3 py-2 rounded-md bg-zinc-950 border border-zinc-800 focus:border-zinc-600 focus:outline-none transition-colors h-24 resize-y"
+                        />
+                      </div>
+
+                      <div className="border-t border-zinc-800 pt-4">
+                        <label className="block text-zinc-300 font-medium mb-2">Technical Challenges</label>
+                        
+                        {/* Challenges List Builder */}
+                        {newProject.challenges && newProject.challenges.length > 0 && (
+                          <div className="space-y-3 mb-4 max-h-60 overflow-y-auto pr-1">
+                            {newProject.challenges.map((challenge, idx) => (
+                              <div key={idx} className="p-3 rounded bg-zinc-900 border border-zinc-800 relative group">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setNewProject({
+                                      ...newProject,
+                                      challenges: newProject.challenges.filter((_, i) => i !== idx)
+                                    });
+                                  }}
+                                  className="absolute top-2 right-2 p-1 text-zinc-500 hover:text-red-400 rounded hover:bg-zinc-800 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  title="Remove Challenge"
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                                <h4 className="font-semibold text-zinc-200 pr-6 text-xs flex items-center gap-1">
+                                  <span className="text-zinc-500">{idx + 1}.</span> {challenge.title}
+                                </h4>
+                                <p className="text-[11px] text-zinc-400 mt-1"><strong className="text-zinc-500 text-[10px]">CHALLENGE:</strong> {challenge.description}</p>
+                                <p className="text-[11px] text-zinc-400 mt-1"><strong className="text-zinc-500 text-[10px]">SOLUTION:</strong> {challenge.solution}</p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Add Challenge Inputs */}
+                        <div className="p-3 rounded bg-zinc-900/50 border border-dashed border-zinc-800 space-y-3">
+                          <p className="text-xs font-semibold text-zinc-400">Add Technical Challenge</p>
+                          <div>
+                            <input
+                              type="text"
+                              placeholder="Challenge Title (e.g. Memory Leak on Re-mount)"
+                              value={challengeInput.title}
+                              onChange={(e) => setChallengeInput({ ...challengeInput, title: e.target.value })}
+                              className="w-full px-3 py-1.5 rounded-md bg-zinc-950 border border-zinc-800 focus:border-zinc-600 focus:outline-none text-xs transition-colors"
+                            />
+                          </div>
+                          <div>
+                            <textarea
+                              placeholder="Describe the challenge..."
+                              value={challengeInput.description}
+                              onChange={(e) => setChallengeInput({ ...challengeInput, description: e.target.value })}
+                              className="w-full px-3 py-1.5 rounded-md bg-zinc-950 border border-zinc-800 focus:border-zinc-600 focus:outline-none text-xs transition-colors h-14 resize-none"
+                            />
+                          </div>
+                          <div>
+                            <textarea
+                              placeholder="Explain your solution..."
+                              value={challengeInput.solution}
+                              onChange={(e) => setChallengeInput({ ...challengeInput, solution: e.target.value })}
+                              className="w-full px-3 py-1.5 rounded-md bg-zinc-950 border border-zinc-800 focus:border-zinc-600 focus:outline-none text-xs transition-colors h-14 resize-none"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (!challengeInput.title || !challengeInput.description || !challengeInput.solution) {
+                                toast("Please fill out all challenge fields.", "error");
+                                return;
+                              }
+                              setNewProject({
+                                ...newProject,
+                                challenges: [...(newProject.challenges || []), challengeInput]
+                              });
+                              setChallengeInput({ title: "", description: "", solution: "" });
+                              toast("Challenge added to list!", "success");
+                            }}
+                            className="w-full py-1.5 rounded bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 hover:text-white transition-colors text-xs font-medium flex items-center justify-center gap-1"
+                          >
+                            <Plus size={12} /> Add to Challenges List
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </form>
             </div>

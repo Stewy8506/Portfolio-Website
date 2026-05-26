@@ -14,6 +14,10 @@ export type Project = {
   link?: string;
   sourceCodeUrl?: string;
   isCurrentlyWorkingOn?: boolean;
+  architectureDiagram?: string;
+  databaseSchema?: string;
+  stateManagement?: string;
+  challenges?: Array<{ title: string; description: string; solution: string }>;
 };
 
 export const PROJECT_CATEGORIES = [
