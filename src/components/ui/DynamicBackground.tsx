@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useMemo, useState } from "react";
+import React, { useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Points, PointMaterial } from "@react-three/drei";
 import * as THREE from "three";
@@ -19,16 +19,14 @@ function ParticleField() {
   const mouse = useRef({ x: 0, y: 0 });
 
   // Generate 7000 particles in a wide spatial box
-  const [originalPositions] = useState(() => {
+  const particles = useMemo(() => {
     const count = 7000;
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count * 3; i++) {
       pos[i] = (Math.random() - 0.5) * 40;
     }
     return pos;
-  });
-
-  const particles = useMemo(() => new Float32Array(originalPositions), [originalPositions]);
+  }, []);
 
   // Track global mouse position for the parallax effect
   React.useEffect(() => {
@@ -55,46 +53,6 @@ function ParticleField() {
     state.camera.position.x += (targetX - state.camera.position.x) * 0.02;
     state.camera.position.y += (targetY - state.camera.position.y) * 0.02;
     state.camera.lookAt(0, 0, 0);
-
-    // Mouse repulsion logic in local space
-    const positionsArray = ref.current.geometry.attributes.position.array as Float32Array;
-    let needsUpdate = false;
-    
-    // Approximate mouse position in the particle's local space
-    const mx = mouse.current.x * 20;
-    const my = mouse.current.y * 20;
-
-    for (let i = 0; i < 7000; i++) {
-      const i3 = i * 3;
-      const ox = originalPositions[i3];
-      const oy = originalPositions[i3 + 1];
-      
-      const px = positionsArray[i3];
-      const py = positionsArray[i3 + 1];
-
-      const dx = px - mx;
-      const dy = py - my;
-      const distSq = dx * dx + dy * dy;
-
-      if (distSq < 15) {
-        // Repel
-        const force = (15 - distSq) / 15;
-        positionsArray[i3] = ox + dx * force * 0.8;
-        positionsArray[i3 + 1] = oy + dy * force * 0.8;
-        needsUpdate = true;
-      } else {
-        // Spring back to original
-        if (Math.abs(ox - px) > 0.01 || Math.abs(oy - py) > 0.01) {
-          positionsArray[i3] += (ox - px) * 0.1;
-          positionsArray[i3 + 1] += (oy - py) * 0.1;
-          needsUpdate = true;
-        }
-      }
-    }
-
-    if (needsUpdate) {
-      ref.current.geometry.attributes.position.needsUpdate = true;
-    }
   });
 
   return (

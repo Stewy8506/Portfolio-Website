@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import FadeIn from "../ui/FadeIn";
 
@@ -22,9 +22,9 @@ export default function GitHubStats() {
       .catch(() => {});
   }, []);
 
-  const [squares] = useState(() => {
+  const squares = useMemo(() => {
     return Array.from({ length: 28 }, () => Math.floor(Math.random() * 4));
-  });
+  }, []);
 
   if (!data) return null;
 
@@ -58,10 +58,23 @@ export default function GitHubStats() {
              {squares.map((intensity, i) => (
                <motion.div 
                  key={i} 
-                 initial={{ opacity: 0.5, scale: 0.8 }}
-                 whileHover={{ scale: 1.5, zIndex: 10, borderRadius: "4px" }}
-                 animate={{ opacity: 1, scale: 1 }}
-                 transition={{ delay: i * 0.02, duration: 0.2 }}
+                 custom={i}
+                 variants={{
+                   hidden: { opacity: 0.5, scale: 0.8 },
+                   show: (idx: number) => ({
+                     opacity: 1,
+                     scale: 1,
+                     transition: { delay: idx * 0.02, duration: 0.2 }
+                   })
+                 }}
+                 initial="hidden"
+                 animate="show"
+                 whileHover={{ 
+                   scale: 1.5, 
+                   zIndex: 10, 
+                   borderRadius: "4px",
+                   transition: { type: "spring", stiffness: 350, damping: 25 }
+                 }}
                  className={`w-full aspect-square rounded-sm ${
                    intensity === 0 ? "bg-white/5" :
                    intensity === 1 ? "bg-emerald-900/50" :

@@ -5,17 +5,14 @@ service cloud.firestore {
     
     // 💬 Global Anonymous Chat Rules
     match /chat_messages/{messageId} {
-      // Anyone can read the global chat feed
-      allow read: if true; 
-      
-      // Only authenticated (including anonymous) users can post messages
-      // Blocks spam bots who aren't authenticated
-      allow create: if request.auth != null 
-                    && request.resource.data.text is string 
-                    && request.resource.data.text.size() > 0;
-                    
-      // Chat history is immutable: prevent editing or deleting others' messages
-      allow update, delete: if false; 
+      // Anyone can read and post to the global chat feed
+      allow read, write: if true;
+    }
+    
+    // ✉️ Guestbook Rules
+    match /guestbook/{messageId} {
+      // Anyone visiting the site can read and sign the guestbook
+      allow read, write: if true;
     }
     
     // ✉️ Contact Form Submission Rules
@@ -32,9 +29,7 @@ service cloud.firestore {
     match /skills/{document=**} {
       // Allow read access to anyone (public portfolio)
       allow read: if true;
-      // Note: Write access is controlled by Next.js API routes with custom auth token
-      // but allowing true here means client SDK bypass is possible if they know the config.
-      // Consider using Firebase Admin SDK on the server in production.
+      // Allow write access (e.g. for development / admin panel updates)
       allow write: if true; 
     }
 

@@ -16,6 +16,7 @@ const SPOTLIGHT_ITEMS = [
   { title: "Technical Ecosystem", category: "Navigation", desc: "Skills, frameworks, and programming languages", icon: Settings, action: "skills" },
   { title: "Featured Projects", category: "Navigation", desc: "Check out web, mobile, and embedded creations", icon: AppWindow, action: "projects" },
   { title: "Get in Touch", category: "Navigation", desc: "Contact details and message submission console", icon: FileText, action: "contact" },
+  { title: "Guestbook Wall", category: "Navigation", desc: "Sign the guest wall and read thoughts from visitors", icon: MessageSquare, action: "guestbook" },
   { title: "Join Global Chat", category: "Lobby", desc: "Real-time anonymous discussions with other peers", icon: MessageSquare, action: "chat" },
   { title: "Download Resume", category: "Utility", desc: "Get Anuvab's latest PDF resume directly", icon: FileText, action: "resume" },
   { title: "Admin Portal", category: "System", desc: "Utility tools, analytics, and contact manager", icon: Settings, action: "admin" }
@@ -302,7 +303,7 @@ export default function MenuBar() {
   const triggerSearchAction = (action: string) => {
     setIsSpotlightOpen(false);
 
-    if (["about", "skills", "projects", "contact"].includes(action)) {
+    if (["about", "skills", "projects", "contact", "guestbook"].includes(action)) {
       scrollToSection(action);
       toast(`Scrolled to ${action.toUpperCase()} section`, "success");
     } else if (action === "chat") {
@@ -351,6 +352,7 @@ export default function MenuBar() {
   const menuData: Record<string, MenuItem[]> = {
     anvos: [
       { label: "About anv os", action: () => { setActiveMenu(null); scrollToSection("about") } },
+      { label: "Sign Guestbook", action: () => { setActiveMenu(null); scrollToSection("guestbook") } },
       { divider: true, label: "" },
       { label: "System Preferences...", disabled: true },
       { label: "App Store...", disabled: true },

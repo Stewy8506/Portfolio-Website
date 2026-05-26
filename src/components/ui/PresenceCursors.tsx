@@ -36,7 +36,7 @@ export default function PresenceCursors() {
 
     // Use a PRESENCE channel. This is exactly how Naresh's portfolio handles it.
     // Presence channels allow client events AND track who is online.
-    const channel = pusher.subscribe("portfolio");
+    const channel = pusher.subscribe("presence-portfolio");
 
     const handleMouseMove = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth) * 100;
@@ -75,7 +75,7 @@ export default function PresenceCursors() {
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
-      pusher.unsubscribe("portfolio");
+      pusher.unsubscribe("presence-portfolio");
     };
   }, [myId, myColor]);
 

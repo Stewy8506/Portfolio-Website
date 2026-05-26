@@ -12,6 +12,7 @@ import HashCanonicalizer from "@/components/layout/HashCanonicalizer";
 import PresenceCursors from "@/components/ui/PresenceCursors";
 import TerminalWindow from "@/components/ui/TerminalWindow";
 import KonamiCode from "@/components/ui/KonamiCode";
+import OnboardingTour from "@/components/ui/OnboardingTour";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,6 +43,7 @@ export default function RootLayout({
           <DynamicBackground />
           <CustomCursor />
           <PresenceCursors />
+          <OnboardingTour />
           <TerminalWindow />
           <KonamiCode />
           <MenuBar />

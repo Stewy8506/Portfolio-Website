@@ -30,7 +30,6 @@ export async function GET() {
       const searchData = await commitsRes.json();
       totalCommits = searchData.total_count || 0;
     }
-    
     return NextResponse.json({
       total_commits: totalCommits,
       public_repos,
@@ -40,4 +39,3 @@ export async function GET() {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
-

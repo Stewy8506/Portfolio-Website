@@ -108,7 +108,7 @@ export default function Skills() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20, filter: "blur(10px)" }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.4 }}
               className="w-full flex flex-col gap-2"
             >
               <MarqueeRow items={row1} speed={45} direction="left" />
@@ -121,7 +121,7 @@ export default function Skills() {
               initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.4 }}
               className="w-full max-w-6xl mx-auto px-6"
             >
               <div className="flex flex-wrap justify-center gap-3 mb-12 bg-white/[0.02] p-1.5 rounded-full border border-white/[0.05] max-w-max mx-auto backdrop-blur-md">
