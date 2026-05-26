@@ -75,8 +75,8 @@ export default function Hero() {
         </FadeIn>
 
         <FadeIn delay={0.2}>
-          <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-[10rem] font-bold tracking-tighter leading-none mb-4">
-            Hi, I&apos;m <br className="md:hidden" />
+          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-[7.5rem] xl:text-[8.5rem] font-bold tracking-tighter leading-none mb-4 whitespace-nowrap">
+            Hi, I&apos;m{" "}
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-200 to-emerald-500">
               Anuvab
             </span>
