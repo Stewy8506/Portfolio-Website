@@ -460,8 +460,8 @@ export default function MenuBar() {
         {/* Right side */}
         <div className="flex items-center gap-4 md:text-white/80">
           <div className="flex items-center gap-2 md:gap-3">
-            {/* 🎵 Lofi Music Stream Control (Hover to expand volume slider) */}
-            <div id="tour-lofi" className="group flex items-center gap-1.5 px-1.5 py-0.5 rounded-lg hover:bg-white/5 transition-all duration-300">
+            {/* 🎵 Lofi Music Stream Control (Hover to show volume dropdown) */}
+            <div id="tour-lofi" className="group relative flex items-center gap-1.5 px-1.5 py-0.5 rounded-lg hover:bg-white/5 transition-all duration-300">
               <button
                 onClick={toggleMusic}
                 className="flex items-center justify-center p-0.5 rounded active:scale-95 transition-all text-white/90 cursor-pointer outline-none border-0 bg-transparent"
@@ -474,8 +474,8 @@ export default function MenuBar() {
                 )}
               </button>
 
-              {/* Slide-out Volume Slider */}
-              <div className="w-0 opacity-0 pointer-events-none group-hover:w-16 group-hover:opacity-100 group-hover:pointer-events-auto flex items-center transition-all duration-300 ease-out overflow-hidden">
+              {/* Dropdown Volume Slider */}
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto flex items-center justify-center p-3 bg-zinc-900/90 border border-white/10 rounded-lg backdrop-blur-xl shadow-xl transition-all duration-300 ease-out z-50 origin-top scale-95 group-hover:scale-100">
                 <input
                   type="range"
                   min="0"
@@ -483,7 +483,7 @@ export default function MenuBar() {
                   step="0.05"
                   value={volume}
                   onChange={handleVolumeChange}
-                  className="w-14 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-sky-400 focus:outline-none"
+                  className="w-24 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-sky-400 focus:outline-none"
                   style={{
                     WebkitAppearance: "none",
                     outline: "none",

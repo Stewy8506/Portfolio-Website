@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, LogOut, Save, ExternalLink, Upload, Image as ImageIcon, X, Search, Filter, Edit2, LayoutTemplate, Wrench, GripVertical, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Trash2, LogOut, Save, ExternalLink, Upload, Image as ImageIcon, X, Search, Filter, Edit2, LayoutTemplate, Wrench, GripVertical, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, MessageSquare } from "lucide-react";
+import { db } from "@/lib/firebase";
+import { collection, query, orderBy, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { toast } from "@/components/ui/Toast";
 import {
   DEFAULT_PROJECT_CATEGORY,
@@ -17,9 +19,10 @@ type ProjectCategory = (typeof PROJECT_CATEGORIES)[number];
 type SkillCategory = (typeof SKILL_CATEGORIES)[number];
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<"projects" | "skills">("projects");
+  const [activeTab, setActiveTab] = useState<"projects" | "skills" | "guestbook">("projects");
   const [projects, setProjects] = useState([]);
   const [skills, setSkills] = useState([]);
+  const [guestbookEntries, setGuestbookEntries] = useState<any[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   
@@ -75,6 +78,7 @@ export default function AdminDashboard() {
     fetchProjects();
     fetchSkills();
     fetchEmploymentStatus();
+    fetchGuestbook();
   }, []);
 
   const fetchEmploymentStatus = async () => {
@@ -126,6 +130,18 @@ export default function AdminDashboard() {
       setSkills(data);
     } catch (error) {
       toast("Failed to fetch skills.", "error");
+    }
+  };
+
+  const fetchGuestbook = async () => {
+    if (!db) return;
+    try {
+      const q = query(collection(db, "guestbook"), orderBy("timestamp", "desc"));
+      const snapshot = await getDocs(q);
+      const entries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setGuestbookEntries(entries);
+    } catch (error) {
+      toast("Failed to fetch guestbook.", "error");
     }
   };
 
@@ -297,6 +313,22 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDeleteGuestbookEntry = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this guestbook entry?")) return;
+    setLoading(true);
+    try {
+      if (db) {
+        await deleteDoc(doc(db, "guestbook", id));
+        toast("Guestbook entry deleted.", "success");
+        await fetchGuestbook();
+      }
+    } catch (error) {
+      toast("Failed to delete entry.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDragStart = (e: React.DragEvent, index: number) => {
     if (searchQuery || categoryFilter !== "All") {
       e.preventDefault();
@@ -422,6 +454,14 @@ export default function AdminDashboard() {
     });
   }, [skills, searchQuery, categoryFilter]);
 
+  const filteredGuestbook = useMemo(() => {
+    return guestbookEntries.filter((entry: any) => {
+      const matchesSearch = entry.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            entry.message.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesSearch;
+    });
+  }, [guestbookEntries, searchQuery]);
+
   if (loading && projects.length === 0 && skills.length === 0) return <div className="min-h-screen bg-zinc-950 text-zinc-100 flex items-center justify-center">Loading...</div>;
 
   return (
@@ -435,8 +475,8 @@ export default function AdminDashboard() {
           </div>
           <div className="flex gap-3">
             <button 
-              onClick={() => activeTab === 'projects' ? setIsProjectModalOpen(true) : setIsSkillModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-md bg-zinc-100 text-zinc-900 font-medium hover:bg-zinc-200 transition-colors text-sm"
+              onClick={() => activeTab === 'projects' ? setIsProjectModalOpen(true) : activeTab === 'skills' ? setIsSkillModalOpen(true) : null}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md bg-zinc-100 text-zinc-900 font-medium hover:bg-zinc-200 transition-colors text-sm ${activeTab === 'guestbook' ? 'hidden' : ''}`}
             >
               <Plus size={16} /> New {activeTab === 'projects' ? 'Project' : 'Skill'}
             </button>
@@ -496,6 +536,12 @@ export default function AdminDashboard() {
           >
             <Wrench size={16} /> Skills
           </button>
+          <button 
+            onClick={() => { setActiveTab("guestbook"); setCategoryFilter("All"); setSearchQuery(""); }}
+            className={`flex items-center gap-2 px-4 py-2 rounded-t-md text-sm font-medium transition-colors ${activeTab === "guestbook" ? "bg-zinc-800 text-white" : "text-zinc-500 hover:text-zinc-300"}`}
+          >
+            <MessageSquare size={16} /> Guestbook
+          </button>
         </div>
 
         {/* Toolbar: Search and Filter */}
@@ -524,13 +570,13 @@ export default function AdminDashboard() {
                     <option key={category} value={category}>{category}</option>
                   ))}
                 </>
-              ) : (
+              ) : activeTab === "skills" ? (
                 <>
                   {SKILL_CATEGORIES.map((category) => (
                     <option key={category} value={category}>{category}</option>
                   ))}
                 </>
-              )}
+              ) : null}
             </select>
           </div>
         </div>
@@ -635,7 +681,7 @@ export default function AdminDashboard() {
                   )}
                 </tbody>
               </table>
-            ) : (
+            ) : activeTab === "skills" ? (
               <table className="w-full text-left text-sm whitespace-nowrap">
                 <thead className="bg-zinc-950/50 border-b border-zinc-800 text-zinc-400">
                   <tr>
@@ -688,6 +734,46 @@ export default function AdminDashboard() {
                     <tr>
                       <td colSpan={5} className="px-6 py-12 text-center text-zinc-500">
                         No skills found matching your criteria.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            ) : (
+              <table className="w-full text-left text-sm whitespace-nowrap">
+                <thead className="bg-zinc-950/50 border-b border-zinc-800 text-zinc-400">
+                  <tr>
+                    <th className="px-6 py-4 font-medium">Name</th>
+                    <th className="px-6 py-4 font-medium">Message</th>
+                    <th className="px-6 py-4 font-medium">Date</th>
+                    <th className="px-6 py-4 font-medium text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-800/50">
+                  {filteredGuestbook.map((entry: any) => (
+                    <tr key={entry.id} className="hover:bg-zinc-800/20 transition-colors">
+                      <td className="px-6 py-3 font-medium text-zinc-100">{entry.name}</td>
+                      <td className="px-6 py-3 text-zinc-300 max-w-xs truncate" title={entry.message}>{entry.message}</td>
+                      <td className="px-6 py-3 text-zinc-400">
+                        {entry.timestamp?.toDate ? entry.timestamp.toDate().toLocaleString() : "Unknown"}
+                      </td>
+                      <td className="px-6 py-3 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button 
+                            onClick={() => handleDeleteGuestbookEntry(entry.id)}
+                            className="p-1.5 rounded-md bg-red-950/30 border border-red-900/50 text-red-400 hover:bg-red-900/50 hover:text-red-300 transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {filteredGuestbook.length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="px-6 py-12 text-center text-zinc-500">
+                        No guestbook entries found matching your criteria.
                       </td>
                     </tr>
                   )}
@@ -851,13 +937,43 @@ export default function AdminDashboard() {
                           alt={`Preview ${idx + 1}`} 
                           className="w-full h-full object-cover"
                         />
-                        <button
-                          type="button"
-                          onClick={() => setNewProject({ ...newProject, images: newProject.images.filter((_, i) => i !== idx) })}
-                          className="absolute top-1 right-1 p-0.5 bg-black/60 rounded text-zinc-300 hover:text-white hover:bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X size={14} />
-                        </button>
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-1">
+                          <div className="flex justify-end w-full">
+                            <button
+                              type="button"
+                              onClick={() => setNewProject({ ...newProject, images: newProject.images.filter((_, i) => i !== idx) })}
+                              className="p-0.5 bg-black/60 rounded text-zinc-300 hover:text-white hover:bg-black/80 transition-colors"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                          <div className="flex justify-between w-full">
+                            <button
+                              type="button"
+                              disabled={idx === 0}
+                              onClick={() => {
+                                const newImages = [...newProject.images];
+                                [newImages[idx - 1], newImages[idx]] = [newImages[idx], newImages[idx - 1]];
+                                setNewProject({ ...newProject, images: newImages });
+                              }}
+                              className="p-0.5 bg-black/60 rounded text-zinc-300 hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                            >
+                              <ChevronLeft size={14} />
+                            </button>
+                            <button
+                              type="button"
+                              disabled={idx === newProject.images.length - 1}
+                              onClick={() => {
+                                const newImages = [...newProject.images];
+                                [newImages[idx + 1], newImages[idx]] = [newImages[idx], newImages[idx + 1]];
+                                setNewProject({ ...newProject, images: newImages });
+                              }}
+                              className="p-0.5 bg-black/60 rounded text-zinc-300 hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                            >
+                              <ChevronRight size={14} />
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     ))}
                     <label className="h-20 w-32 flex flex-col items-center justify-center gap-2 rounded-md bg-zinc-950 border border-zinc-800 border-dashed hover:bg-zinc-900 transition-colors cursor-pointer text-zinc-400 text-xs">

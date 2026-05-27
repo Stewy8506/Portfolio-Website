@@ -3,6 +3,7 @@
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
+import { LaptopMockup } from "../ui/LaptopMockup";
 
 interface Project {
   id?: string;
@@ -176,13 +177,10 @@ function CinematicCard({
                 </div>
               ) : (
                 /* Widescreen/Desktop screenshot style */
-                <Image
-                  src={thumbnail}
-                  alt={project.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  unoptimized={isRemote}
-                  className="object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]"
+                <LaptopMockup 
+                  src={thumbnail} 
+                  alt={project.title} 
+                  className="w-full lg:w-[110%] max-w-2xl ml-0 lg:ml-8" 
                 />
               )}
             </div>

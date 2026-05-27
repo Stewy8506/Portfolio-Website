@@ -9,6 +9,7 @@ import { GitHubIcon } from "./BrandIcons";
 import { getProjectLiveUrl, type Project } from "@/lib/projects";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { LaptopMockup } from "./LaptopMockup";
 
 // Inline phone frame for modal — mirrors ProjectCarousel phone design
 function ModalPhoneFrame({ src, title, idx }: { src: string; title: string; idx: number }) {
@@ -35,12 +36,7 @@ function ModalPhoneFrame({ src, title, idx }: { src: string; title: string; idx:
         <div className="absolute -left-[3px] top-[88px] w-[3px] h-8 rounded-l-full" style={{ background: "linear-gradient(180deg, #3a3a3e, #252528)" }} />
         <div className="absolute -left-[3px] top-[132px] w-[3px] h-8 rounded-l-full" style={{ background: "linear-gradient(180deg, #3a3a3e, #252528)" }} />
         <div className="absolute -right-[3px] top-[108px] w-[3px] h-12 rounded-r-full" style={{ background: "linear-gradient(180deg, #3a3a3e, #252528)" }} />
-        {/*
-          CORNER RADIUS (modal phone):
-          • Outer shell  → change "rounded-[3rem]"    on the outer <div> (className above)
-          • Inner screen → change "rounded-[2.75rem]" on the inner <div> below
-        */}
-        {/* Inner screen — no notch, clean full-bleed */}
+        {/* Inner screen */}
         <div className="relative rounded-[1.9rem] overflow-hidden" style={{ background: "#000" }}>
           <div className="relative" style={{ aspectRatio: "9/19.5" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -112,34 +108,17 @@ export default function ProjectPreviewModal({ project: incomingProject, isOpen, 
     if (incomingProject) setProject(incomingProject);
   }, [incomingProject]);
 
-  // Robust scroll-lock that works across all browsers (incl. iOS Safari)
+  // Simple overflow hidden for scroll-lock (prevents jumping)
   useEffect(() => {
     if (isOpen) {
-      const scrollY = window.scrollY;
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.left = "0";
-      document.body.style.right = "0";
       document.body.style.overflow = "hidden";
       // Reset modal scroll position on open
       if (scrollRef.current) scrollRef.current.scrollTop = 0;
     } else {
-      const scrollY = Math.abs(parseInt(document.body.style.top || "0", 10));
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.left = "";
-      document.body.style.right = "";
       document.body.style.overflow = "";
-      window.scrollTo(0, scrollY);
     }
     return () => {
-      const scrollY = Math.abs(parseInt(document.body.style.top || "0", 10));
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.left = "";
-      document.body.style.right = "";
       document.body.style.overflow = "";
-      if (scrollY) window.scrollTo(0, scrollY);
     };
   }, [isOpen]);
 
@@ -323,27 +302,21 @@ export default function ProjectPreviewModal({ project: incomingProject, isOpen, 
                     ))}
                   </div>
                 ) : (
-                  // Desktop / default layout — natural aspect ratio images
-                  images.map((img: string, idx: number) => (
-                    <motion.div
-                      key={idx}
-                      initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
-                      whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                      viewport={{ once: true, margin: "-100px" }}
-                      transition={{ duration: 0.8, ease: "easeOut" }}
-                      className="relative w-full rounded-2xl overflow-hidden bg-zinc-900 border border-white/5 shadow-2xl group"
-                    >
-                      <Image
+                  // Desktop / default layout — laptop mockups
+                  <div className="space-y-12">
+                    {images.map((img: string, idx: number) => (
+                      <LaptopMockup
+                        key={idx}
                         src={img}
                         alt={`${project.title} screenshot ${idx + 1}`}
-                        width={1600}
-                        height={1200}
-                        sizes="(max-width: 1024px) 100vw, 60vw"
-                        className="w-full h-auto object-cover group-hover:scale-[1.02] transition-transform duration-1000 ease-out"
-                        unoptimized={img.startsWith('http')}
+                        className="max-w-4xl pt-8"
+                        initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
+                        whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                        viewport={{ once: true, margin: "-60px" }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
                       />
-                    </motion.div>
-                  ))
+                    ))}
+                  </div>
                 )}
               </div>
             </div>

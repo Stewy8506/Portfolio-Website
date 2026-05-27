@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { LaptopMockup } from "./LaptopMockup";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -245,13 +246,13 @@ function DesktopCarousel({ images }: { images: string[] }) {
 
   return (
     <div
-      className="relative w-full overflow-hidden rounded-2xl group border border-white/10 bg-black/50"
+      className="relative w-full group pt-8"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={() => setPaused(true)}
       onTouchEnd={() => setPaused(false)}
     >
-      <div className="w-full aspect-[16/9] md:aspect-[21/9] flex items-center justify-center relative">
+      <LaptopMockup className="max-w-4xl">
         <motion.div
           className="flex w-full h-full"
           animate={{ x: `-${currentIndex * 100}%` }}
@@ -263,26 +264,26 @@ function DesktopCarousel({ images }: { images: string[] }) {
               <img
                 src={img}
                 alt={`Project image ${idx + 1}`}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-top"
+                draggable={false}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
             </div>
           ))}
         </motion.div>
-      </div>
+      </LaptopMockup>
 
       {images.length > 1 && (
         <>
           {/* Prev button */}
-          <div className="absolute inset-y-0 left-0 flex items-center px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+          <div className="absolute inset-y-0 left-0 md:-left-4 flex items-center px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
             <NavButton direction="prev" onClick={goPrev} />
           </div>
           {/* Next button */}
-          <div className="absolute inset-y-0 right-0 flex items-center px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+          <div className="absolute inset-y-0 right-0 md:-right-4 flex items-center px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
             <NavButton direction="next" onClick={goNext} />
           </div>
           {/* Bottom indicators */}
-          <div className="absolute bottom-4 inset-x-0 flex justify-center z-10">
+          <div className="absolute -bottom-8 inset-x-0 flex justify-center z-10">
             <ProgressDots
               count={images.length}
               current={currentIndex}
