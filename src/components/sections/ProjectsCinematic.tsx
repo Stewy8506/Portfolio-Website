@@ -4,6 +4,7 @@ import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import { LaptopMockup } from "../ui/LaptopMockup";
+import { PhotoFrameMockup } from "../ui/PhotoFrameMockup";
 
 interface Project {
   id?: string;
@@ -43,7 +44,8 @@ function CinematicCard({
   const isRemote = typeof thumbnail === "string" && thumbnail.startsWith("http");
   const resolvedImageType =
     project.imageType ??
-    (project.category?.toLowerCase().includes("mobile") ? "phone" : "auto");
+    (project.category?.toLowerCase().includes("mobile") ? "phone" : 
+     project.category?.toLowerCase().includes("embedded") ? "embedded" : "auto");
 
   // Parallax: background drifts slower than scroll, foreground faster
   const bgY = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
@@ -175,6 +177,12 @@ function CinematicCard({
                     }}
                   />
                 </div>
+              ) : resolvedImageType === "embedded" ? (
+                <PhotoFrameMockup 
+                  src={thumbnail} 
+                  alt={project.title} 
+                  className="w-full lg:w-[110%] max-w-2xl ml-0 lg:ml-8" 
+                />
               ) : (
                 /* Widescreen/Desktop screenshot style */
                 <LaptopMockup 

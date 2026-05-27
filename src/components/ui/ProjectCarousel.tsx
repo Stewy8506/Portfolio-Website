@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { LaptopMockup } from "./LaptopMockup";
+import { PhotoFrameMockup } from "./PhotoFrameMockup";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -15,7 +16,7 @@ const AUTO_INTERVAL = 4000; // ms between slides
 
 interface ProjectCarouselProps {
   images: string[];
-  imageType?: "phone" | "desktop" | "auto";
+  imageType?: "phone" | "desktop" | "embedded" | "auto";
 }
 
 // ─── Shared: Nav Arrow Button ─────────────────────────────────────────────────
@@ -438,12 +439,123 @@ function PhoneCarousel({ images }: { images: string[] }) {
   );
 }
 
+// ─── Embedded / Photo Frame Mode ──────────────────────────────────────────────
+function EmbeddedCarousel({ images }: { images: string[] }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const startTimeRef = useRef<number>(Date.now());
+  const rafRef = useRef<number | null>(null);
+
+  const goTo = useCallback(
+    (idx: number) => {
+      setCurrentIndex(idx);
+      setProgress(0);
+      startTimeRef.current = Date.now();
+    },
+    []
+  );
+
+  const goNext = useCallback(
+    () => goTo((currentIndex + 1) % images.length),
+    [currentIndex, images.length, goTo]
+  );
+
+  const goPrev = useCallback(
+    () => goTo((currentIndex - 1 + images.length) % images.length),
+    [currentIndex, images.length, goTo]
+  );
+
+  // Auto-advance via requestAnimationFrame for smooth progress
+  useEffect(() => {
+    if (images.length <= 1) return;
+
+    const tick = () => {
+      if (!paused) {
+        const elapsed = Date.now() - startTimeRef.current;
+        const p = Math.min(elapsed / AUTO_INTERVAL, 1);
+        setProgress(p);
+        if (p >= 1) {
+          setCurrentIndex((prev) => (prev + 1) % images.length);
+          setProgress(0);
+          startTimeRef.current = Date.now();
+        }
+      } else {
+        // Keep updating startTime so progress doesn't jump on resume
+        startTimeRef.current = Date.now() - progress * AUTO_INTERVAL;
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [images.length, paused, progress]);
+
+  return (
+    <div
+      className="relative w-full group pt-8"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onTouchStart={() => setPaused(true)}
+      onTouchEnd={() => setPaused(false)}
+    >
+      <PhotoFrameMockup className="max-w-4xl">
+        <motion.div
+          className="flex w-full h-full"
+          animate={{ x: `-${currentIndex * 100}%` }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
+          {images.map((img, idx) => (
+            <div key={idx} className="w-full h-full flex-shrink-0 relative">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={img}
+                alt={`Project image ${idx + 1}`}
+                className="w-full h-full object-cover object-top"
+                draggable={false}
+              />
+            </div>
+          ))}
+        </motion.div>
+      </PhotoFrameMockup>
+
+      {images.length > 1 && (
+        <>
+          {/* Prev button */}
+          <div className="absolute inset-y-0 left-0 md:-left-4 flex items-center px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+            <NavButton direction="prev" onClick={goPrev} />
+          </div>
+          {/* Next button */}
+          <div className="absolute inset-y-0 right-0 md:-right-4 flex items-center px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+            <NavButton direction="next" onClick={goNext} />
+          </div>
+          {/* Bottom indicators */}
+          <div className="absolute -bottom-8 inset-x-0 flex justify-center z-10">
+            <ProgressDots
+              count={images.length}
+              current={currentIndex}
+              progress={progress}
+              onSelect={goTo}
+            />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 // ─── Main Export ──────────────────────────────────────────────────────────────
 export default function ProjectCarousel({ images, imageType = "auto" }: ProjectCarouselProps) {
   if (!images || images.length === 0) return null;
 
   if (imageType === "phone") {
     return <PhoneCarousel images={images} />;
+  }
+
+  if (imageType === "embedded") {
+    return <EmbeddedCarousel images={images} />;
   }
 
   return <DesktopCarousel images={images} />;

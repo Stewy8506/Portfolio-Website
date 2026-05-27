@@ -84,9 +84,10 @@ export default async function ProjectCaseStudy(props: { params: Promise<{ slug: 
   const images = project.images || (project.image ? [project.image] : ["/projects/default.jpg"]);
 
   // Resolve imageType: explicit field takes priority, otherwise infer from category
-  const resolvedImageType: "phone" | "desktop" | "auto" =
+  const resolvedImageType: "phone" | "desktop" | "embedded" | "auto" =
     project.imageType ??
-    (project.category?.toLowerCase().includes("mobile") ? "phone" : "auto");
+    (project.category?.toLowerCase().includes("mobile") ? "phone" : 
+     project.category?.toLowerCase().includes("embedded") ? "embedded" : "auto");
 
   // Two-column layout specifically optimized for Phone/Mobile mockups to make usage of horizontal space
   if (resolvedImageType === "phone") {

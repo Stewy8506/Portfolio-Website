@@ -10,6 +10,7 @@ import { getProjectLiveUrl, type Project } from "@/lib/projects";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LaptopMockup } from "./LaptopMockup";
+import { PhotoFrameMockup } from "./PhotoFrameMockup";
 
 // Inline phone frame for modal — mirrors ProjectCarousel phone design
 function ModalPhoneFrame({ src, title, idx }: { src: string; title: string; idx: number }) {
@@ -130,9 +131,10 @@ export default function ProjectPreviewModal({ project: incomingProject, isOpen, 
   const liveUrl = project ? getProjectLiveUrl(project) : "";
 
   // Same fallback as slug page — infer phone from category when field missing in Firestore
-  const resolvedImageType: "phone" | "desktop" | "auto" =
+  const resolvedImageType: "phone" | "desktop" | "embedded" | "auto" =
     project.imageType ??
-    (project.category?.toLowerCase().includes("mobile") ? "phone" : "auto");
+    (project.category?.toLowerCase().includes("mobile") ? "phone" : 
+     project.category?.toLowerCase().includes("embedded") ? "embedded" : "auto");
 
   // Stagger variants for content
   const containerVariants = {
@@ -299,6 +301,22 @@ export default function ProjectPreviewModal({ project: incomingProject, isOpen, 
                   <div className="space-y-4">
                     {images.map((img: string, idx: number) => (
                       <ModalPhoneFrame key={idx} src={img} title={project.title} idx={idx} />
+                    ))}
+                  </div>
+                ) : resolvedImageType === "embedded" ? (
+                  // Embedded layout — photo frame mockups
+                  <div className="space-y-12">
+                    {images.map((img: string, idx: number) => (
+                      <PhotoFrameMockup
+                        key={idx}
+                        src={img}
+                        alt={`${project.title} screenshot ${idx + 1}`}
+                        className="max-w-4xl pt-8"
+                        initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
+                        whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                        viewport={{ once: true, margin: "-60px" }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                      />
                     ))}
                   </div>
                 ) : (

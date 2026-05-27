@@ -17,7 +17,7 @@ export function LaptopMockup({ src, alt, children, className, ...props }: Laptop
       {...props}
     >
       <div
-        className="relative w-full rounded-t-[5%] md:rounded-t-[1.5rem] overflow-hidden p-[2%] md:p-[12px] shadow-2xl"
+        className="relative w-full rounded-t-[0.75rem] md:rounded-t-[1rem] overflow-hidden p-[10px] md:p-[12px] shadow-2xl"
         style={{
           background: "linear-gradient(145deg, #2a2a2e 0%, #1a1a1e 40%, #0f0f12 100%)",
           boxShadow: "0 0 0 1px rgba(255,255,255,0.08), 0 40px 100px -16px rgba(0,0,0,0.95), inset 0 1px 0 rgba(255,255,255,0.12)",
@@ -25,7 +25,7 @@ export function LaptopMockup({ src, alt, children, className, ...props }: Laptop
       >
 
         {/* Screen */}
-        <div className="relative rounded-sm md:rounded-md overflow-hidden bg-black" style={{ aspectRatio: "16/10" }}>
+        <div className="relative rounded-sm md:rounded-md overflow-hidden bg-black" style={{ aspectRatio: "16/9" }}>
           {src ? (
             /* eslint-disable-next-line @next/next/no-img-element */
             <img src={src} alt={alt || "Screenshot"} className="w-full h-full object-cover object-top" draggable={false} />
