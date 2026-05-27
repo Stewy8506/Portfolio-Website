@@ -11,6 +11,7 @@ import ScrollToTop from "@/components/ui/ScrollToTop";
 import HashCanonicalizer from "@/components/layout/HashCanonicalizer";
 import PresenceCursors from "@/components/ui/PresenceCursors";
 import TerminalWindow from "@/components/ui/TerminalWindow";
+import ChatWindow from "@/components/ui/ChatWindow";
 import KonamiCode from "@/components/ui/KonamiCode";
 import OnboardingTour from "@/components/ui/OnboardingTour";
 
@@ -52,6 +53,7 @@ export default function RootLayout({
           <PresenceCursors />
           <OnboardingTour />
           <TerminalWindow />
+          <ChatWindow />
           <KonamiCode />
           <MenuBar />
           {children}

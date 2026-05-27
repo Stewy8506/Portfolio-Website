@@ -4,16 +4,17 @@ import React from "react";
 import { Volume2, VolumeX, MessageSquare, Wifi, Search, Terminal, BatteryMedium } from "lucide-react";
 import { toast } from "../ui/Toast";
 import Magnetic from "../ui/Magnetic";
+import { useWindowStore } from "@/store/windowStore";
 
 interface SystemTrayProps {
-  setIsChatOpen: (val: boolean) => void;
   setIsSpotlightOpen: (val: boolean) => void;
 }
 
 export default function SystemTray({
-  setIsChatOpen,
   setIsSpotlightOpen,
 }: SystemTrayProps) {
+  const openWindow = useWindowStore((state) => state.openWindow);
+
   // WiFi Action
   const handleWifiClick = () => {
     const isOnline = typeof navigator !== "undefined" ? navigator.onLine : true;
@@ -49,9 +50,10 @@ export default function SystemTray({
       <Magnetic strength={0.4}>
         <button
           id="tour-chat"
-          onClick={() => setIsChatOpen(true)}
+          onClick={() => openWindow("chat", "chat", "Global Chat")}
           className="flex items-center justify-center p-1 rounded hover:bg-white/10 active:scale-95 transition-all text-white/90 cursor-pointer outline-none border-0 bg-transparent"
           title="Open Global Chat"
+          aria-label="Open Global Chat Window"
         >
           <MessageSquare className="w-4 h-4 md:w-3.5 md:h-3.5 text-emerald-400" />
         </button>
@@ -63,6 +65,7 @@ export default function SystemTray({
           onClick={handleWifiClick}
           className="flex items-center justify-center p-1 rounded hover:bg-white/10 active:scale-95 transition-all text-white/90 cursor-pointer outline-none border-0 bg-transparent"
           title="WiFi Status"
+          aria-label="Check WiFi Status"
         >
           <Wifi className="w-4 h-4 md:w-3.5 md:h-3.5 text-zinc-300 hover:text-white" />
         </button>
@@ -75,6 +78,7 @@ export default function SystemTray({
           onClick={() => setIsSpotlightOpen(true)}
           className="flex items-center justify-center p-1 rounded hover:bg-white/10 active:scale-95 transition-all text-white/90 cursor-pointer outline-none border-0 bg-transparent"
           title="Spotlight Search (Cmd+K)"
+          aria-label="Open Spotlight Search"
         >
           <Search className="w-4 h-4 md:w-3.5 md:h-3.5 text-zinc-300 hover:text-white" />
         </button>
@@ -83,9 +87,10 @@ export default function SystemTray({
       {/* 💻 Terminal Trigger */}
       <Magnetic strength={0.4}>
         <button
-          onClick={() => window.dispatchEvent(new CustomEvent('toggleTerminal'))}
+          onClick={() => openWindow("terminal", "terminal", "Terminal (bash)")}
           className="hidden md:flex items-center justify-center p-1 rounded hover:bg-white/10 active:scale-95 transition-all text-white/90 cursor-pointer outline-none border-0 bg-transparent"
           title="Open Terminal (Cmd+Q)"
+          aria-label="Open Terminal Window"
         >
           <Terminal className="w-4 h-4 md:w-3.5 md:h-3.5 text-emerald-400 hover:text-white" />
         </button>
@@ -97,6 +102,7 @@ export default function SystemTray({
           onClick={handleBatteryClick}
           className="flex items-center justify-center p-1 rounded hover:bg-white/10 active:scale-95 transition-all text-white/90 cursor-pointer outline-none border-0 bg-transparent"
           title="Power & Battery Status"
+          aria-label="Check Battery Status"
         >
           <BatteryMedium className="w-5 h-5 md:w-4 md:h-4 text-zinc-300 hover:text-white" />
         </button>

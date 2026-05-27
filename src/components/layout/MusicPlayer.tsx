@@ -1,22 +1,27 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { Volume2, VolumeX } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { Volume2, VolumeX, Loader2 } from "lucide-react";
 import { toast } from "../ui/Toast";
 import { useSoundEffect } from "@/hooks/useSoundEffect";
 
 export default function MusicPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [volume, setVolume] = useState(0.5); // Default to 50%
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const playerRef = useRef<any>(null);
+  
+  // Track if we've initialized the player
+  const initializedRef = useRef(false);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { playThocc } = useSoundEffect();
 
-  // Initialize YouTube Iframe Player on mount (client-side only)
-  useEffect(() => {
-    if (typeof window === "undefined") return;
+  const initYouTubePlayer = () => {
+    if (typeof window === "undefined" || initializedRef.current) return;
+    setIsLoading(true);
+    initializedRef.current = true;
 
     // 1. Create a hidden element for YouTube player
     let div = document.getElementById("youtube-lofi-player");
@@ -32,21 +37,6 @@ export default function MusicPlayer() {
       document.body.appendChild(div);
     }
 
-    // 2. Load YouTube Iframe API script if not present
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (!(window as any).YT) {
-      const tag = document.createElement("script");
-      tag.src = "https://www.youtube.com/iframe_api";
-      const firstScriptTag = document.getElementsByTagName("script")[0];
-      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
-    }
-
-    // Define or override global callback
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).onYouTubeIframeAPIReady = () => {
-      initPlayer();
-    };
-
     const initPlayer = () => {
       try {
         if (playerRef.current) return;
@@ -56,7 +46,7 @@ export default function MusicPlayer() {
           width: "0",
           videoId: "CFGLoQIhmow", // Yasumu - We Met (requested soothing track)
           playerVars: {
-            autoplay: 0,
+            autoplay: 1, // Start playing immediately after it loads
             controls: 0,
             disablekb: 1,
             fs: 0,
@@ -70,6 +60,9 @@ export default function MusicPlayer() {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onReady: (event: any) => {
               event.target.setVolume(volume * 100);
+              setIsLoading(false);
+              setIsPlaying(true);
+              toast("Playing: Lofi Music 🎧", "success");
             },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onStateChange: (event: any) => {
@@ -82,30 +75,31 @@ export default function MusicPlayer() {
         });
       } catch (e) {
         console.error("YouTube Player initialization failed", e);
+        setIsLoading(false);
       }
     };
 
-    // If script is already loaded by other sessions, initialize immediately
+    // 2. Load YouTube Iframe API script if not present
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((window as any).YT && (window as any).YT.Player) {
+    if (!(window as any).YT) {
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      const firstScriptTag = document.getElementsByTagName("script")[0];
+      if (firstScriptTag?.parentNode) {
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      } else {
+        document.head.appendChild(tag);
+      }
+      
+      // Define or override global callback
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).onYouTubeIframeAPIReady = () => {
+        initPlayer();
+      };
+    } else {
       initPlayer();
     }
-
-    return () => {
-      // Cleanup player
-      if (playerRef.current && typeof playerRef.current.destroy === "function") {
-        try {
-          playerRef.current.destroy();
-        } catch { }
-        playerRef.current = null;
-      }
-      const existingDiv = document.getElementById("youtube-lofi-player");
-      if (existingDiv) {
-        existingDiv.remove();
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [volume]);
+  };
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = parseFloat(e.target.value);
@@ -116,6 +110,14 @@ export default function MusicPlayer() {
   };
 
   const toggleMusic = () => {
+    if (isLoading) return;
+
+    // Deferred Loading Strategy: Only load the massive YouTube API when they click play
+    if (!initializedRef.current) {
+      initYouTubePlayer();
+      return;
+    }
+
     if (!playerRef.current || typeof playerRef.current.playVideo !== "function") {
       toast("Player is loading... please try again in a moment.", "info");
       return;
@@ -144,8 +146,11 @@ export default function MusicPlayer() {
         onClick={toggleMusic}
         className="flex items-center justify-center p-0.5 rounded active:scale-95 transition-all text-white/90 cursor-pointer outline-none border-0 bg-transparent"
         title={isPlaying ? "Pause Lofi Stream" : "Stream Soothing Lofi"}
+        aria-label={isPlaying ? "Pause Background Music" : "Play Background Music"}
       >
-        {isPlaying ? (
+        {isLoading ? (
+          <Loader2 className="w-4 h-4 md:w-3.5 md:h-3.5 text-zinc-400 animate-spin" />
+        ) : isPlaying ? (
           <Volume2 className="w-4 h-4 md:w-3.5 md:h-3.5 text-sky-400 animate-pulse" />
         ) : (
           <VolumeX className="w-4 h-4 md:w-3.5 md:h-3.5 text-zinc-400 hover:text-white" />

@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { Command } from "lucide-react";
 import MenuDropdown, { MenuItem } from "../ui/MenuDropdown";
 import ToastContainer, { toast } from "../ui/Toast";
-import ChatWindow from "../ui/ChatWindow";
 import { usePathname } from "next/navigation";
 import { scrollToSection } from "@/lib/navigation";
 import MusicPlayer from "./MusicPlayer";
@@ -17,7 +16,6 @@ export default function MenuBar() {
   const [time, setTime] = useState("");
   const [is24Hour, setIs24Hour] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  const [isChatOpen, setIsChatOpen] = useState(false);
   const [isSpotlightOpen, setIsSpotlightOpen] = useState(false);
   
   const menuRef = useRef<HTMLDivElement>(null);
@@ -214,7 +212,6 @@ export default function MenuBar() {
           <div className="flex items-center gap-2 md:gap-3">
             <MusicPlayer />
             <SystemTray 
-              setIsChatOpen={setIsChatOpen} 
               setIsSpotlightOpen={setIsSpotlightOpen} 
             />
           </div>
@@ -230,15 +227,11 @@ export default function MenuBar() {
         </div>
       </motion.div>
 
-      {/* Render Global Chat Widget */}
-      <ChatWindow isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
-
       {/* 🔍 SPOTLIGHT SEARCH OVERLAY */}
       <SpotlightSearch 
         isSpotlightOpen={isSpotlightOpen} 
         setIsSpotlightOpen={setIsSpotlightOpen} 
         isAdmin={isAdmin} 
-        setIsChatOpen={setIsChatOpen} 
       />
     </>
   );

@@ -7,14 +7,10 @@ import { ArrowLeft, LayoutGrid, Rows, Maximize } from "lucide-react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import ProjectPreviewModal from "@/components/ui/ProjectPreviewModal";
 import ProjectsCinematic from "../../components/sections/ProjectsCinematic";
-import ProjectsHorizontal from "../../components/sections/ProjectsHorizontal";
-
-type ViewMode = "cinematic" | "horizontal";
 
 export default function AllProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<ViewMode>("cinematic");
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const [filter, setFilter] = useState("All");
 
@@ -103,34 +99,11 @@ export default function AllProjectsPage() {
             ))}
           </div>
         </div>
-
-        {/* View Toggle */}
-        <div className="flex items-center gap-2 p-1 bg-white/5 rounded-full border border-white/10 shrink-0">
-          <button
-            onClick={() => setViewMode("cinematic")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all ${
-              viewMode === "cinematic" ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.3)] scale-105" : "text-zinc-400 hover:text-white"
-            }`}
-          >
-            <Rows size={14} /> <span className="hidden sm:inline">Cinematic</span>
-          </button>
-          <button
-            onClick={() => setViewMode("horizontal")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all ${
-              viewMode === "horizontal" ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.3)] scale-105" : "text-zinc-400 hover:text-white"
-            }`}
-          >
-            <Maximize size={14} /> <span className="hidden sm:inline">Gallery</span>
-          </button>
-        </div>
       </motion.header>
       
       {/* Dynamic Viewport */}
-      <div className={`flex-1 w-full relative ${
-        viewMode === "horizontal" ? "" : "pt-[150px] md:pt-[88px]"
-      }`}>
-        {viewMode === "cinematic" && <ProjectsCinematic projects={filteredProjects} onSelect={setSelectedProject} />}
-        {viewMode === "horizontal" && <ProjectsHorizontal projects={filteredProjects} onSelect={setSelectedProject} />}
+      <div className="flex-1 w-full relative pt-[150px] md:pt-[88px]">
+        <ProjectsCinematic projects={filteredProjects} onSelect={setSelectedProject} />
       </div>
 
       <ProjectPreviewModal 

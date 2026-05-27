@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, FileText, Settings, AppWindow, MessageSquare, CornerDownLeft, Lock } from "lucide-react";
 import { toast } from "../ui/Toast";
 import { scrollToSection } from "@/lib/navigation";
+import { useWindowStore } from "@/store/windowStore";
 
 const SPOTLIGHT_ITEMS = [
   { title: "About Anuvab", category: "Navigation", desc: "Background, timeline, and professional bio", icon: FileText, action: "about" },
@@ -21,15 +22,14 @@ interface SpotlightSearchProps {
   isSpotlightOpen: boolean;
   setIsSpotlightOpen: (val: boolean) => void;
   isAdmin: boolean;
-  setIsChatOpen: (val: boolean) => void;
 }
 
 export default function SpotlightSearch({
   isSpotlightOpen,
   setIsSpotlightOpen,
   isAdmin,
-  setIsChatOpen,
 }: SpotlightSearchProps) {
+  const openWindow = useWindowStore((state) => state.openWindow);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchIndex, setSearchIndex] = useState(0);
   const spotlightInputRef = useRef<HTMLInputElement>(null);
@@ -64,7 +64,7 @@ export default function SpotlightSearch({
       scrollToSection(action);
       toast(`Scrolled to ${action.toUpperCase()} section`, "success");
     } else if (action === "chat") {
-      setIsChatOpen(true);
+      openWindow("chat", "chat", "Global Chat");
     } else if (action === "resume") {
       const link = document.createElement("a");
       link.href = "/resume.pdf";
