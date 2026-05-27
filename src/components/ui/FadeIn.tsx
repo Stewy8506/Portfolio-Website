@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
+import { useLoading } from "../layout/ClientLayoutWrapper";
 
 interface FadeInProps {
   children: ReactNode;
@@ -20,6 +21,8 @@ export default function FadeIn({
   duration = 0.5,
   className,
 }: FadeInProps) {
+  const { isSiteReady } = useLoading();
+
   const variants: Variants = {
     hidden: {
       opacity: 0,
@@ -39,6 +42,19 @@ export default function FadeIn({
       },
     },
   };
+
+  if (!isSiteReady) {
+    return (
+      <div 
+        className={cn("opacity-0 scale-[0.98] will-change-transform", className)}
+        style={{
+          transform: direction === "up" ? "translateY(20px)" : direction === "down" ? "translateY(-20px)" : direction === "left" ? "translateX(20px)" : direction === "right" ? "translateX(-20px)" : "none"
+        }}
+      >
+        {children}
+      </div>
+    );
+  }
 
   return (
     <motion.div

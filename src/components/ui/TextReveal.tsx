@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useLoading } from "../layout/ClientLayoutWrapper";
 
 interface TextRevealProps {
   children: string;
@@ -11,6 +12,7 @@ interface TextRevealProps {
 }
 
 export default function TextReveal({ children, className, delay = 0 }: TextRevealProps) {
+  const { isSiteReady } = useLoading();
   const words = children.split(" ");
 
   const container = {
@@ -43,6 +45,22 @@ export default function TextReveal({ children, className, delay = 0 }: TextRevea
       },
     },
   };
+
+  if (!isSiteReady) {
+    return (
+      <div className={cn("flex flex-wrap opacity-0", className)}>
+        {words.map((word, index) => (
+          <span
+            style={{ marginRight: "0.25em", transform: "translateY(20px)", filter: "blur(4px)" }}
+            key={index}
+            className="inline-block"
+          >
+            {word}
+          </span>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <motion.div

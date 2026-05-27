@@ -10,7 +10,7 @@ interface MermaidDiagramProps {
 }
 
 const MIN_ZOOM = 0.4;
-const MAX_ZOOM = 2.5;
+const MAX_ZOOM = 10.0;
 const ZOOM_STEP = 0.2;
 
 export default function MermaidDiagram({ code, id }: MermaidDiagramProps) {
@@ -19,6 +19,10 @@ export default function MermaidDiagram({ code, id }: MermaidDiagramProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [zoom, setZoom] = useState(1);
   const elementRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const startPos = useRef({ x: 0, y: 0, scrollLeft: 0, scrollTop: 0 });
 
   useEffect(() => {
     let isMounted = true;
@@ -30,51 +34,10 @@ export default function MermaidDiagram({ code, id }: MermaidDiagramProps) {
         const mermaid = (await import("mermaid")).default;
         mermaid.initialize({
           startOnLoad: false,
-          theme: "base",
+          theme: "dark",
           securityLevel: "loose",
           fontFamily: "var(--font-geist-sans, Inter, sans-serif)",
-          fontSize: 14,
-          themeVariables: {
-            // Base
-            background: "transparent",
-            mainBkg: "rgba(6, 182, 212, 0.06)",
-            // Primary nodes (Cyan / Diamond Blue)
-            primaryColor: "rgba(6, 182, 212, 0.08)",
-            primaryBorderColor: "rgba(6, 182, 212, 0.4)",
-            primaryTextColor: "#f4f4f5",
-            // Secondary nodes (Sky Blue)
-            secondaryColor: "rgba(14, 165, 233, 0.06)",
-            secondaryBorderColor: "rgba(14, 165, 233, 0.35)",
-            secondaryTextColor: "#e4e4e7",
-            // Tertiary nodes
-            tertiaryColor: "rgba(139, 92, 246, 0.06)",
-            tertiaryBorderColor: "rgba(139, 92, 246, 0.35)",
-            tertiaryTextColor: "#e4e4e7",
-            // Edges
-            lineColor: "rgba(34, 211, 238, 0.5)",
-            edgeLabelBackground: "rgba(9, 9, 11, 0.9)",
-            // Text
-            textColor: "#d4d4d8",
-            labelTextColor: "#e4e4e7",
-            // ER Diagram
-            attributeBackgroundColorEven: "rgba(6, 182, 212, 0.04)",
-            attributeBackgroundColorOdd: "rgba(14, 165, 233, 0.04)",
-            // Sequence diagram
-            actorBorder: "rgba(6, 182, 212, 0.4)",
-            actorBkg: "rgba(6, 182, 212, 0.06)",
-            actorTextColor: "#f4f4f5",
-            actorLineColor: "rgba(34, 211, 238, 0.3)",
-            signalColor: "#22d3ee",
-            signalTextColor: "#f4f4f5",
-            labelBoxBkgColor: "rgba(9, 9, 11, 0.9)",
-            labelBoxBorderColor: "rgba(6, 182, 212, 0.3)",
-            loopTextColor: "#a1a1aa",
-            noteBorderColor: "rgba(14, 165, 233, 0.3)",
-            noteBkgColor: "rgba(14, 165, 233, 0.06)",
-            noteTextColor: "#e4e4e7",
-            activationBorderColor: "rgba(34, 211, 238, 0.5)",
-            activationBkgColor: "rgba(6, 182, 212, 0.08)",
-          },
+          fontSize: 18,
         });
 
         const cleanId = `mermaid-${id.replace(/[^a-zA-Z0-9-]/g, "")}`;
@@ -99,6 +62,60 @@ export default function MermaidDiagram({ code, id }: MermaidDiagramProps) {
   const handleZoomIn = useCallback(() => setZoom((z) => Math.min(z + ZOOM_STEP, MAX_ZOOM)), []);
   const handleZoomOut = useCallback(() => setZoom((z) => Math.max(z - ZOOM_STEP, MIN_ZOOM)), []);
   const handleReset = useCallback(() => setZoom(1), []);
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        if (containerRef.current?.requestFullscreen) {
+          await containerRef.current.requestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        }
+      }
+    } catch (err) {
+      console.error("Fullscreen error:", err);
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!viewportRef.current) return;
+    isDragging.current = true;
+    startPos.current = {
+      x: e.pageX - viewportRef.current.offsetLeft,
+      y: e.pageY - viewportRef.current.offsetTop,
+      scrollLeft: viewportRef.current.scrollLeft,
+      scrollTop: viewportRef.current.scrollTop,
+    };
+  };
+
+  const handleMouseLeave = () => {
+    isDragging.current = false;
+  };
+
+  const handleMouseUp = () => {
+    isDragging.current = false;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging.current || !viewportRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - viewportRef.current.offsetLeft;
+    const y = e.pageY - viewportRef.current.offsetTop;
+    const walkX = (x - startPos.current.x) * 1.5;
+    const walkY = (y - startPos.current.y) * 1.5;
+    viewportRef.current.scrollLeft = startPos.current.scrollLeft - walkX;
+    viewportRef.current.scrollTop = startPos.current.scrollTop - walkY;
+  };
 
   // ── Error state ────────────────────────────────────────────────────────────
   if (error) {
@@ -133,24 +150,42 @@ export default function MermaidDiagram({ code, id }: MermaidDiagramProps) {
     );
   }
 
-  // ── Shared diagram content ─────────────────────────────────────────────────
-  const DiagramContent = ({ inModal = false }: { inModal?: boolean }) => (
+  return (
     <div
-      className={`relative group w-full diagram-border-animated rounded-3xl ${inModal ? "h-full" : ""}`}
+      ref={containerRef}
+      className={`relative group w-full ${isFullscreen ? "bg-zinc-950 p-0 md:p-8 flex items-center justify-center" : "diagram-border-animated rounded-3xl"}`}
     >
-      {/* Inner card */}
       <div
-        className={`relative w-full rounded-3xl overflow-hidden diagram-grid-bg border border-white/[0.06] backdrop-blur-sm transition-all duration-500 ${
-          inModal ? "h-full flex flex-col" : "bg-zinc-950/70"
+        className={`relative w-full overflow-hidden diagram-grid-bg border border-white/[0.06] backdrop-blur-sm transition-all duration-500 ${
+          isFullscreen ? "h-full flex flex-col rounded-3xl" : "rounded-3xl bg-zinc-950/70"
         }`}
       >
         {/* Top bar */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-white/[0.05] bg-white/[0.01] flex-shrink-0">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 group/controls">
             {/* Traffic-light dots */}
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
-            <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/60" />
+            <button 
+              onClick={() => isFullscreen && toggleFullscreen()}
+              className={`w-3 h-3 rounded-full flex items-center justify-center transition-all ${isFullscreen ? "bg-red-500 hover:bg-red-400" : "bg-zinc-800 opacity-50 cursor-not-allowed"}`}
+              disabled={!isFullscreen}
+              title={isFullscreen ? "Close Fullscreen" : ""}
+            >
+              {isFullscreen && <span className="text-[8px] text-red-950 font-bold opacity-0 group-hover/controls:opacity-100 hidden md:block">x</span>}
+            </button>
+            <button 
+              onClick={handleReset}
+              className="w-3 h-3 rounded-full bg-yellow-500 hover:bg-yellow-400 flex items-center justify-center transition-all"
+              title="Reset Zoom"
+            >
+              <span className="text-[8px] text-yellow-950 font-bold opacity-0 group-hover/controls:opacity-100 hidden md:block">-</span>
+            </button>
+            <button 
+              onClick={toggleFullscreen}
+              className="w-3 h-3 rounded-full bg-emerald-500 hover:bg-emerald-400 flex items-center justify-center transition-all"
+              title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+            >
+              <span className="text-[8px] text-emerald-950 font-bold opacity-0 group-hover/controls:opacity-100 hidden md:block">+</span>
+            </button>
             <span className="ml-3 text-[10px] font-medium text-zinc-600 tracking-widest uppercase select-none">
               Interactive Diagram
             </span>
@@ -170,13 +205,6 @@ export default function MermaidDiagram({ code, id }: MermaidDiagramProps) {
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
             <button
-              onClick={handleReset}
-              className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.06] transition-all"
-              aria-label="Reset zoom"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
-            <button
               onClick={handleZoomIn}
               disabled={zoom >= MAX_ZOOM}
               className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.06] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
@@ -184,79 +212,75 @@ export default function MermaidDiagram({ code, id }: MermaidDiagramProps) {
             >
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
-            <div className="w-px h-4 bg-white/10 mx-1" />
-            <button
-              onClick={() => {
-                setZoom(1);
-                setIsFullscreen(!isFullscreen);
-              }}
-              className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.06] transition-all"
-              aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
-            >
-              {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-            </button>
           </div>
         </div>
 
-        {/* Diagram viewport */}
-        <div
-          className={`relative overflow-auto flex items-center justify-center ${inModal ? "flex-1 min-h-0" : "p-6 md:p-10"}`}
-          style={{ cursor: zoom !== 1 ? "grab" : "default" }}
-        >
-          {/* Left + right edge fade for overflow hint */}
+        {/* Diagram viewport wrapper */}
+        <div className={`relative flex-1 flex flex-col ${isFullscreen ? "min-h-0" : "min-h-[400px]"}`}>
+          {/* Left + right edge fade for overflow hint (Absolute so they don't scroll) */}
           <div className="pointer-events-none absolute inset-y-0 left-0 w-12 z-10"
-            style={{ background: "linear-gradient(to right, rgba(9,9,11,0.4), transparent)" }}
+            style={{ background: "linear-gradient(to right, rgba(9,9,11,0.6), transparent)" }}
           />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-12 z-10"
-            style={{ background: "linear-gradient(to left, rgba(9,9,11,0.4), transparent)" }}
+            style={{ background: "linear-gradient(to left, rgba(9,9,11,0.6), transparent)" }}
           />
 
+          {/* Actual scrollable viewport */}
           <div
-            ref={elementRef}
-            className="mermaid-container transition-transform duration-200 ease-out origin-center"
-            style={{ transform: `scale(${zoom})` }}
-            dangerouslySetInnerHTML={{ __html: svg }}
-          />
+            ref={viewportRef}
+            onMouseDown={handleMouseDown}
+            onMouseLeave={handleMouseLeave}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove}
+            className={`w-full h-full overflow-auto flex-1 ${isFullscreen ? "" : "p-6 md:p-10"}`}
+            style={{ cursor: isDragging.current ? "grabbing" : "grab" }}
+          >
+            <div className="min-w-full min-h-full flex items-center justify-center p-8 select-none pointer-events-none">
+              <style dangerouslySetInnerHTML={{ __html: `
+                .mermaid-container svg {
+                  max-width: none !important;
+                  height: auto !important;
+                  background: transparent !important;
+                }
+                .mermaid-container .er.entityBox {
+                  fill: rgba(24, 24, 27, 0.9) !important;
+                  stroke: rgba(63, 63, 70, 0.8) !important;
+                }
+                .mermaid-container .er.entityLabel {
+                  fill: #ffffff !important;
+                  font-weight: bold !important;
+                  font-size: 1.1em !important;
+                }
+                .mermaid-container .er.attributeBoxOdd {
+                  fill: rgba(39, 39, 42, 0.5) !important;
+                }
+                .mermaid-container .er.attributeBoxEven {
+                  fill: rgba(24, 24, 27, 0.5) !important;
+                }
+                .mermaid-container .er.relationshipLabel {
+                  fill: #a1a1aa !important;
+                  background-color: rgba(9, 9, 11, 0.8) !important;
+                }
+              `}} />
+              <div
+                ref={elementRef}
+                className="mermaid-container transition-transform duration-200 ease-out origin-center"
+                style={{ transform: `scale(${zoom})` }}
+                dangerouslySetInnerHTML={{ __html: svg }}
+              />
+            </div>
+          </div>
         </div>
 
         {/* Bottom hint */}
-        {!inModal && (
+        {!isFullscreen && (
           <div className="flex items-center justify-center gap-4 px-5 py-2.5 border-t border-white/[0.04] bg-white/[0.005]">
             <span className="text-[9px] text-zinc-700 tracking-widest uppercase font-medium select-none">
-              Scroll to pan · Use controls to zoom · Click fullscreen for detail
+              Click & Drag to pan · Use green dot for fullscreen · yellow dot to reset zoom
             </span>
           </div>
         )}
       </div>
     </div>
-  );
-
-  return (
-    <>
-      <DiagramContent />
-
-      <AnimatePresence>
-        {isFullscreen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-[99] flex items-center justify-center p-4 md:p-12"
-            style={{ background: "rgba(0,0,0,0.92)", backdropFilter: "blur(24px)" }}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.97, opacity: 0 }}
-              transition={{ type: "spring", damping: 25, stiffness: 220 }}
-              className="w-full h-full max-w-7xl max-h-[90vh] flex flex-col"
-            >
-              <DiagramContent inModal />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
   );
 }

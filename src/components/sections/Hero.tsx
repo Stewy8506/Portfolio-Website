@@ -10,6 +10,7 @@ import { useSoundEffect } from "@/hooks/useSoundEffect";
 import Magnetic from "../ui/Magnetic";
 import { scrollToSection } from "@/lib/navigation";
 import { GitHubIcon, LinkedInIcon } from "../ui/BrandIcons";
+import { useLoading } from "../layout/ClientLayoutWrapper";
 
 export default function Hero() {
   const { playThocc } = useSoundEffect();
@@ -31,9 +32,23 @@ export default function Hero() {
     return () => window.removeEventListener("mousemove", handleMove);
   }, [mouseX, mouseY]);
 
+  const { isSiteReady } = useLoading();
+
   const handleScroll = (id: string) => {
     scrollToSection(id);
   };
+
+  if (!isSiteReady) {
+    return (
+      <section className="relative min-h-screen w-full flex items-center overflow-hidden opacity-0 pointer-events-none">
+        <div className="absolute pointer-events-none select-none">
+          <h1>Anuvab Das.</h1>
+          <p>Architecting elite digital systems with uncompromising precision</p>
+          <p>Building the future of digital experiences.</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="relative min-h-screen w-full flex items-center overflow-hidden">
@@ -50,7 +65,7 @@ export default function Hero() {
 
       {/* MOBILE HERO (OLD DESIGN) */}
       <div className="flex md:hidden relative z-10 text-center px-6 max-w-4xl flex-col items-center justify-center w-full h-full pointer-events-auto">
-        <FadeIn delay={0.2}>
+        <FadeIn delay={0.1}>
           <h1 className="text-4xl font-bold tracking-tighter leading-none mb-4 whitespace-nowrap">
             Hi, I&apos;m{" "}
             <span className="relative inline-block">
@@ -83,13 +98,13 @@ export default function Hero() {
           </h1>
         </FadeIn>
 
-        <FadeIn delay={0.25}>
+        <FadeIn delay={0.2}>
           <h2 className="text-2xl font-medium tracking-tight text-zinc-400 mb-8 max-w-3xl mx-auto leading-tight">
             Building the <span className="text-white font-semibold">future of digital</span> experiences.
           </h2>
         </FadeIn>
 
-        <TextReveal delay={0.3} className="text-lg text-muted mb-10 max-w-2xl mx-auto text-balance justify-center text-center">
+        <TextReveal delay={1.0} className="text-lg text-muted mb-10 max-w-2xl mx-auto text-balance justify-center text-center">
           Full stack developer specializing in high-performance apps with React Native, Flutter, and AI-driven products. Crafting minimal, premium interfaces.
         </TextReveal>
 
@@ -125,11 +140,11 @@ export default function Hero() {
         {/* LEFT COLUMN - Massive Typography & Pitch */}
         <div className="col-span-12 xl:col-span-8 flex flex-col h-full min-h-[75vh] pointer-events-auto">
 
-          <div className="flex-1 flex flex-col justify-center w-full relative" style={{ perspective: "1200px" }}>
+          <div className="flex-1 flex flex-col justify-center w-full relative pt-12 md:pt-16 xl:pt-20" style={{ perspective: "1200px" }}>
             <motion.h1
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ staggerChildren: 0.15, delayChildren: 0.2 }}
+              transition={{ staggerChildren: 0.08, delayChildren: 0.1 }}
               className="leading-none flex items-baseline overflow-visible pt-20 -mt-20 whitespace-nowrap"
             >
               <motion.span
@@ -148,11 +163,11 @@ export default function Hero() {
                   let hoverGlow = "";
 
                   if (isAnuvab) {
-                    textStyles = "font-black tracking-tight text-[13vw] sm:text-[10vw] xl:text-[8rem] 2xl:text-[9rem] bg-gradient-to-b from-cyan-100 via-cyan-300 to-cyan-500 drop-shadow-[0_0_15px_rgba(6,182,212,0.45)]";
-                    hoverGlow = "brightness(1.5) drop-shadow(0px 0px 20px rgba(6,182,212,0.7))";
+                    textStyles = "font-black tracking-tight text-[13vw] sm:text-[10vw] xl:text-[8rem] 2xl:text-[9rem] bg-gradient-to-b from-cyan-100 via-cyan-300 to-cyan-500 drop-shadow-[0_0_15px_rgba(6,182,212,0.3)]";
+                    hoverGlow = "brightness(1.5) drop-shadow(0px 0px 20px rgba(6,182,212,0.5))";
                   } else if (isDas) {
                     const isFirstOfDas = i === 7;
-                    textStyles = `font-quicksand font-light italic tracking-[0.02em] px-[0.15em] -mx-[0.15em] text-[10vw] sm:text-[7.5vw] xl:text-[5.8rem] 2xl:text-[6.5rem] bg-gradient-to-b from-white via-zinc-200 to-zinc-400 drop-shadow-[0_0_8px_rgba(255,255,255,0.15)] ${isFirstOfDas ? "ml-4" : ""}`;
+                    textStyles = `font-quicksand font-light italic tracking-[0.02em] px-[0.15em] -mx-[0.15em] text-[11vw] sm:text-[8vw] xl:text-[6.4rem] 2xl:text-[7rem] bg-gradient-to-b from-white via-zinc-200 to-zinc-400 drop-shadow-[0_0_8px_rgba(255,255,255,0.15)] ${isFirstOfDas ? "ml-1" : ""}`;
                     hoverGlow = "brightness(1.4) drop-shadow(0px 0px 15px rgba(255,255,255,0.5))";
                   } else if (isDot) {
                     textStyles = "font-black text-[8vw] sm:text-[6vw] xl:text-[4rem] 2xl:text-[4.5rem] bg-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]";
@@ -209,18 +224,23 @@ export default function Hero() {
                 })}
               </motion.span>
             </motion.h1>
+
+            {/* Location Widget directly below the title */}
+            <FadeIn delay={0.3} className="mt-6 md:mt-8">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/5 bg-white/[0.02] backdrop-blur-md self-start">
+                <div className="relative flex h-2 w-2 items-center justify-center">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                </div>
+                <span className="text-xs text-zinc-400 font-medium tracking-wide">Kolkata, India</span>
+              </div>
+            </FadeIn>
           </div>
 
-          <FadeIn delay={0.8} className="mt-auto mb-4 max-w-2xl">
-            <div className="text-2xl md:text-3xl lg:text-4xl text-zinc-500 leading-tight font-light">
-              <p>
-                Crafting <span className="text-white font-semibold">elite web experiences</span> by fusing <span className="text-emerald-400 italic font-medium">robust architecture</span>
-              </p>
-              <p className="mt-1">with</p>
-              <p className="font-mono text-xs md:text-sm tracking-[0.2em] uppercase mt-6 text-zinc-600 font-bold">
-                Uncompromising design.
-              </p>
-            </div>
+          <FadeIn delay={0.4} className="mt-auto mb-4 max-w-5xl">
+            <p className="text-2xl md:text-3xl lg:text-4xl text-zinc-500 leading-tight font-light text-balance">
+              Architecting <span className="text-white font-semibold">elite digital systems</span> with <span className="text-emerald-400 italic font-medium">uncompromising precision</span>
+            </p>
           </FadeIn>
         </div>
 
@@ -228,7 +248,7 @@ export default function Hero() {
         <div className="col-span-12 xl:col-span-4 flex flex-col justify-end h-full pointer-events-auto">
 
           {/* THE LIVE TERMINAL WIDGET */}
-          <FadeIn delay={1.0} className="w-full mb-12">
+          <FadeIn delay={0.2} className="w-full mb-12">
             <div className="border border-white/10 bg-black/40 backdrop-blur-md rounded-xl p-6 relative overflow-hidden flex flex-col">
 
               {/* Widget Header */}
@@ -260,15 +280,15 @@ export default function Hero() {
           </FadeIn>
 
           {/* THE ACTION HUB */}
-          <FadeIn delay={1.2} className="w-full flex flex-col items-start xl:items-end gap-5">
+          <FadeIn delay={0.4} className="w-full flex flex-col items-start xl:items-end gap-5">
 
             <div className="flex flex-col items-start xl:items-end gap-3 w-full border-t border-white/10 pt-6">
               <Magnetic strength={0.1}>
-                <motion.button 
-                  whileHover={{ scale: 1.05 }} 
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => { playThocc(); handleScroll("projects"); }} 
-                  onMouseEnter={playThocc} 
+                  onClick={() => { playThocc(); handleScroll("projects"); }}
+                  onMouseEnter={playThocc}
                   className="group flex items-center gap-3 text-white hover:text-emerald-400 transition-colors"
                 >
                   <span className="font-mono text-xs text-zinc-500 group-hover:text-emerald-500 transition-colors">01.</span>
@@ -278,13 +298,13 @@ export default function Hero() {
               </Magnetic>
 
               <Magnetic strength={0.1}>
-                <motion.a 
-                  whileHover={{ scale: 1.05 }} 
+                <motion.a
+                  whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  href="/resume.pdf" 
-                  download="Anuvab_Resume.pdf" 
-                  tabIndex={-1} 
-                  onMouseEnter={playThocc} 
+                  href="/resume.pdf"
+                  download="Anuvab_Resume.pdf"
+                  tabIndex={-1}
+                  onMouseEnter={playThocc}
                   className="group flex items-center gap-3 text-zinc-400 hover:text-white transition-colors"
                 >
                   <span className="font-mono text-xs text-zinc-600 group-hover:text-white transition-colors">02.</span>

@@ -117,31 +117,28 @@ export default function AppWindow({
     };
   }, [windowData?.isMaximized, windowData?.isMinimized, defaultWidth, defaultHeight, controls, targetX, targetY, isMobile]);
 
-  // Closing animation — genie-shrink to the dock
+  // Closing animation — fade and scale out for desktop, slide down for mobile
   useEffect(() => {
     if (!windowData?.isClosing) return;
 
-    const shrinkTo = isMobile
+    const closeAnimation = isMobile
       ? { y: "100%", opacity: 0, scaleX: 1, scaleY: 0.4, skewX: 0 }
       : {
           opacity: 0,
-          scaleX: 0.01,
-          scaleY: 0.02,
-          x: targetX,
-          y: targetY,
-          skewX: 12,
+          scale: 0.9,
+          y: 20,
         };
 
     controls.start({
-      ...shrinkTo,
+      ...closeAnimation,
       transition: {
-        duration: 0.32,
-        ease: [0.4, 0, 1, 1], // sharp ease-in — fast acceleration into dock
+        duration: 0.25,
+        ease: "easeOut",
       },
     }).then(() => {
       destroyWindow(id);
     });
-  }, [windowData?.isClosing, isMobile, controls, targetX, targetY, id, destroyWindow]);
+  }, [windowData?.isClosing, isMobile, controls, id, destroyWindow]);
 
   if (!windowData || (!windowData.isOpen && !windowData.isClosing)) return null;
 
@@ -194,6 +191,7 @@ export default function AppWindow({
           minWidth: isMobile ? "100vw" : (windowData.isMaximized ? "100vw" : minWidth),
           minHeight: isMobile ? "90vh" : (windowData.isMaximized ? "100vh" : minHeight),
           transformOrigin: "bottom center", // Key to macOS Genie squeeze
+          resize: !isMobile && !windowData.isMaximized ? "both" : "none",
         }}
         className={`flex flex-col overflow-hidden bg-zinc-950/80 backdrop-blur-3xl border ${isActive ? "border-white/20 shadow-2xl" : "border-white/10 shadow-lg"
           } ${isMobile ? "rounded-t-3xl rounded-b-none border-b-0" : windowData.isMaximized ? "rounded-none" : "rounded-xl"}`}
