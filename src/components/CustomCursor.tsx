@@ -12,7 +12,7 @@ const CustomCursor = () => {
     width: number;
     height: number;
   } | null>(null);
-  
+
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -32,7 +32,7 @@ const CustomCursor = () => {
       if (!isVisible) setIsVisible(true);
 
       const target = e.target as HTMLElement;
-      
+
       // Ignore elements explicitly marked with data-cursor="none"
       if (target.closest("[data-cursor='none']")) {
         setTargetRect(null);
@@ -79,13 +79,12 @@ const CustomCursor = () => {
     <>
       {/* The actual mouse pointer dot */}
       <motion.div
-        className="hidden md:flex fixed top-0 left-0 w-2 h-2 bg-white rounded-full pointer-events-none z-[9999] items-center justify-center overflow-hidden shadow-[0_0_4px_rgba(0,0,0,0.5)]"
+        className="hidden md:flex fixed top-0 left-0 w-2 h-2 bg-white rounded-full pointer-events-none z-[9999] mix-blend-difference items-center justify-center overflow-hidden"
         style={{
           x: cursorX,
           y: cursorY,
           translateX: "-50%",
           translateY: "-50%",
-          willChange: "transform",
         }}
         animate={{
           opacity: isVisible ? 1 : 0,
@@ -95,17 +94,17 @@ const CustomCursor = () => {
       >
         <AnimatePresence>
           {isViewMode && (
-            <motion.span 
+            <motion.span
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 0.1 }}
               exit={{ opacity: 0, scale: 0.5 }}
               className="text-black flex items-center justify-center w-7 h-7"
             >
-              <svg 
-                className="w-full h-full stroke-black" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                strokeWidth="3.5" 
+              <svg
+                className="w-full h-full stroke-black"
+                viewBox="0 0 24 24"
+                fill="none"
+                strokeWidth="3.5"
                 strokeLinecap="round"
               >
                 <line x1="12" y1="5" x2="12" y2="19" />
@@ -118,39 +117,38 @@ const CustomCursor = () => {
 
       <AnimatePresence>
         {targetRect && !isViewMode && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="hidden md:flex fixed pointer-events-none z-[9999]"
+            className="hidden md:flex fixed pointer-events-none z-[9999] mix-blend-difference"
             style={{
               top: targetRect.top,
               left: targetRect.left,
               width: targetRect.width,
               height: targetRect.height,
-              willChange: "transform, width, height, top, left",
             }}
           >
             {/* Top-Left Corner */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-white"
             />
             {/* Top-Right Corner */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-white"
             />
             {/* Bottom-Left Corner */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-white"
             />
             {/* Bottom-Right Corner */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-white"
